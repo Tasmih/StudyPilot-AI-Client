@@ -1,26 +1,115 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@plugin "tailwindcss-animate";
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: #ffffff;
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: #ffffff;
+
+  --color-muted: #e2e8f0;
+  --color-muted-foreground: #64748b;
+
+  --color-border: #cbd5e1;
+  --color-input: #cbd5e1;
+  --color-ring: var(--primary);
+
+  --color-card: #ffffff;
+  --color-card-foreground: var(--foreground);
+
+  --color-text: var(--text);
+  --color-dark: var(--dark);
+  
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+
+  /* Custom Gradient for StudyPilot AI */
+  --background-image-gradient-primary: linear-gradient(to right, var(--primary), var(--secondary));
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+@layer base {
+  :root {
+    --primary: #4F46E5;
+    --secondary: #0EA5E9;
+    --accent: #10B981;
+    --background: #F8FAFC;
+    --dark: #0F172A;
+    --text: #1E293B;
+    --foreground: #1E293B; /* Mapped to text for standard text rendering */
+    --muted: #64748B;
+    --border: #E2E8F0;
+  }
+
+  /* Optional dark mode mapped to the dark neutral */
+  .dark {
+    --background: #0F172A;
+    --foreground: #F8FAFC;
+    --text: #F8FAFC;
+    --card: #1E293B;
+    --border: #334155;
+    --input: #334155;
+  }
+}
+
+/* Glassmorphism Utilities */
+@utility glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@utility glass-dark {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }
