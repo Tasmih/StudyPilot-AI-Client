@@ -5,7 +5,7 @@ export const plannerSchema = z.object({
   goal: z.string().min(10, "Please describe your goal in more detail."),
   examDate: z.string().min(1, "Please select an exam date."),
   skillLevel: z.enum(["beginner", "intermediate", "advanced"], {
-    required_error: "Please select your current skill level.",
+    message: "Please select your current skill level.",
   }),
   dailyStudyTime: z.number().min(1, "You must study for at least 1 hour.").max(24, "Invalid study time."),
 });
