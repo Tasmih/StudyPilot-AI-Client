@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
-import { Toaster } from "sonner";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "StudyPilot AI - Intelligent Learning Assistant",
-  description: "Your personalized AI study companion for achieving academic success.",
+  title: "StudyPilot AI - Your Ultimate Premium Study Companion",
+  description: "StudyPilot AI is a state-of-the-art educational SaaS platform. Generate personalized study roadmaps, chat with AI tutors, and track your academic progress.",
+  keywords: "Study, AI Tutor, Education, Learning, SaaS, Study Planner",
+  authors: [{ name: "StudyPilot AI Team" }],
 };
 
 export default function RootLayout({
@@ -25,14 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
         <Providers>
           {children}
-          <Toaster richColors position="top-center" />
+          <ToastContainer 
+            position="bottom-right"
+            theme="dark"
+            toastClassName="bg-card text-foreground border border-border/50 shadow-xl rounded-lg"
+          />
         </Providers>
       </body>
     </html>
