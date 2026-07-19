@@ -11,6 +11,7 @@ import {
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
+import { Loading } from "@/components/ui/loading";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -24,10 +25,33 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
 
+  React.useEffect(() => {
+    if (!isPending && !session) {
+      window.location.href = "/login";
+    }
+  }, [session, isPending]);
+
   const handleSignOut = async () => {
     await signOut();
     window.location.href = "/login";
   };
+
+  if (isPending) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center space-y-4">
+          <Loading size="lg" className="text-primary" />
+          <p className="text-sm font-medium text-muted-foreground animate-pulse">
+            Verifying your session...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null;
+  }
 
   const SidebarContent = () => (
     <>

@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, X, BrainCircuit, Home, Star, Info, Mail, 
-  LayoutDashboard, Calendar, MessageSquare, ListTodo, User
+  LayoutDashboard, Calendar, MessageSquare, ListTodo, User,
+  Compass, Sparkles
 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/utils/cn";
@@ -24,16 +25,17 @@ export function Navbar() {
 
   const loggedOutRoutes = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Features", href: "/#features", icon: Star },
+    { name: "Explore", href: "/explore", icon: Compass },
     { name: "About", href: "/#about", icon: Info },
-    { name: "Contact", href: "/#contact", icon: Mail },
   ];
 
   const loggedInRoutes = [
+    { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "AI Planner", href: "/planner", icon: Calendar },
-    { name: "AI Assistant", href: "/assistant", icon: MessageSquare },
-    { name: "Items", href: "/items/manage", icon: ListTodo },
+    { name: "Planner", href: "/planner", icon: Calendar },
+    { name: "Explore", href: "/explore", icon: Compass },
+    { name: "AI Tutor", href: "/assistant", icon: MessageSquare },
+    { name: "Recommendations", href: "/recommendations", icon: Sparkles },
     { name: "Profile", href: "/profile", icon: User },
   ];
 

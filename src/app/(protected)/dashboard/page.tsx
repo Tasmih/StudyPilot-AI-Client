@@ -99,7 +99,7 @@ export default function DashboardPage() {
       <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-3 items-center">
         <div className="md:col-span-2 flex flex-col justify-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Welcome back, {session?.user?.name || "Student"}! 👋
+            Welcome back, {profile?.name || session?.user?.name || "Student"}! 👋
           </h1>
           <p className="text-muted-foreground">
             Here's an overview of your study progress and AI insights.
