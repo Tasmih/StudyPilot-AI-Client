@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   Compass,
   ArrowLeft,
+  ArrowRight,
   Calendar,
   Award,
   Star,
@@ -48,6 +49,8 @@ export default function ExploreDetailsPage({ params }: PageProps) {
   const { data: session } = useSession();
 
   const [template, setTemplate] = useState<ExploreTemplate | null>(null);
+  const [related, setRelated] = useState<ExploreTemplate[]>([]);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [is404, setIs404] = useState(false);
@@ -79,11 +82,37 @@ export default function ExploreDetailsPage({ params }: PageProps) {
     }
   };
 
+  const fetchRelated = async (categoryName: string) => {
+    setIsLoadingRelated(true);
+    try {
+      const res = await apiClient.get<{
+        success: boolean;
+        data: ExploreTemplate[];
+      }>(`/api/explore?category=${encodeURIComponent(categoryName)}&limit=10`);
+
+      if (res.success && res.data) {
+        // Filter out current template by ID and slice to first 3 related
+        const filtered = res.data.filter((item) => item.id !== id).slice(0, 3);
+        setRelated(filtered);
+      }
+    } catch (err) {
+      console.error("Related templates fetch error:", err);
+    } finally {
+      setIsLoadingRelated(false);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       fetchTemplate();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (template?.category) {
+      fetchRelated(template.category);
+    }
+  }, [template?.category, id]);
 
   // Difficulty badge colors mapping
   const difficultyColors = {
@@ -193,7 +222,8 @@ export default function ExploreDetailsPage({ params }: PageProps) {
           </Card>
         ) : (
           /* Main content view */
-          <Card className="border-border/80 bg-card/50 backdrop-blur-md shadow-lg overflow-hidden relative">
+          <>
+            <Card className="border-border/80 bg-card/50 backdrop-blur-md shadow-lg overflow-hidden relative">
             
             {/* Template image banner */}
             <div className="relative h-64 md:h-80 w-full overflow-hidden bg-muted">
@@ -309,6 +339,111 @@ export default function ExploreDetailsPage({ params }: PageProps) {
 
             </CardContent>
           </Card>
+          
+          {/* Related Study Programs Section */}
+          {!isLoading && template && (
+            <div className="pt-8 space-y-6">
+              <div className="flex items-center gap-2 border-b border-border/40 pb-4">
+                <Sparkles className="h-5.5 w-5.5 text-primary" />
+                <h3 className="text-xl font-extrabold text-foreground tracking-tight">Related Study Programs</h3>
+              </div>
+
+              {isLoadingRelated ? (
+                /* Related templates skeletons */
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse flex flex-col justify-between h-[340px]">
+                      <div className="h-40 bg-muted w-full" />
+                      <div className="p-4 space-y-2">
+                        <div className="h-4 bg-muted rounded w-1/4" />
+                        <div className="h-6 bg-muted rounded w-3/4" />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : related.length === 0 ? (
+                /* Empty state */
+                <p className="text-xs text-muted-foreground italic">No other related study programs found in this category.</p>
+              ) : (
+                /* Related Grid */
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((item) => (
+                    <Card
+                      key={item.id}
+                      className="bg-card border border-border/60 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden group rounded-[20px]"
+                    >
+                      {/* Card Image Banner */}
+                      <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+                        {/* Category fallback gradient in background */}
+                        <div className={cn("absolute inset-0 bg-gradient-to-br", getCategoryGradient(item.category))} />
+                        
+                        {item.imageUrl && (
+                          <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                            }}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
+
+                      <CardHeader className="p-5 pb-0 flex-grow flex flex-col space-y-3">
+                        {/* Badges row */}
+                        <div className="flex items-center justify-between w-full select-none">
+                          <span className="text-[10px] font-semibold tracking-wide px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                            {item.category}
+                          </span>
+                          <span className="text-[10px] font-semibold tracking-wide px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                            {item.difficulty}
+                          </span>
+                        </div>
+
+                        <CardTitle className="text-sm font-bold text-foreground line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors leading-snug pt-1">
+                          {item.title}
+                        </CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2rem]">
+                          {item.description}
+                        </CardDescription>
+                      </CardHeader>
+
+                      <CardContent className="p-5 pt-0 mt-auto flex flex-col gap-4">
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground/80 border-t border-border/40 pt-4">
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                            {item.duration}
+                          </span>
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <ListTodo className="h-3.5 w-3.5 text-muted-foreground" />
+                            {item.tasksCount} steps
+                          </span>
+                          <span className="flex items-center gap-0.5 font-bold text-yellow-600 dark:text-yellow-500">
+                            <Star className="h-3.5 w-3.5 fill-current text-yellow-500 shrink-0" />
+                            {item.rating.toFixed(1)}
+                          </span>
+                        </div>
+
+                        {/* View details redirection link */}
+                        <Link href={`/explore/${item.id}`} className="block">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full flex items-center justify-center gap-1.5 text-xs font-bold border-primary/20 text-primary hover:bg-primary/5 hover:border-primary/40 transition-all py-2 h-10 group/btn"
+                          >
+                            <span>View Details</span>
+                            <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          </>
         )}
       </main>
 
