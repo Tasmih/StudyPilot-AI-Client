@@ -9,7 +9,7 @@ import { apiClient } from "@/lib/api-client";
 import { Loading } from "@/components/ui/loading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Plus, Trash2, Calendar, Award, ChevronRight, ArrowLeft, AlertCircle } from "lucide-react";
+import { BookOpen, Plus, Trash2, Calendar, Award, ChevronRight, ArrowLeft, AlertCircle, RefreshCw, Save, X } from "lucide-react";
 
 interface BackendTask {
   id: string;
@@ -33,8 +33,14 @@ export default function PlannerPage() {
   const [plans, setPlans] = useState<BackendStudyPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<BackendStudyPlan | null>(null);
   const [isLoadingPlans, setIsLoadingPlans] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // States for preview & regeneration workflows
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [previewPlan, setPreviewPlan] = useState<PlannerResponse | null>(null);
+  const [originalFormData, setOriginalFormData] = useState<PlannerFormData | null>(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   // Load plans on mount
   useEffect(() => {
@@ -59,69 +65,69 @@ export default function PlannerPage() {
 
   const handleGeneratePlan = async (formData: PlannerFormData) => {
     setIsGenerating(true);
+    setPreviewPlan(null);
+    setOriginalFormData(null);
     try {
-      // Simulating AI generation delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call secure server-side AI generation endpoint
+      const genRes = await apiClient.post<{ success: boolean; data: PlannerResponse }>(
+        "/api/study-plans/generate",
+        formData
+      );
 
-      // Simulated response matching the requested schema
-      const mockResponse: PlannerResponse = {
-        roadmap: [
-          {
-            phaseName: "Phase 1: Foundations & Core Concepts",
-            tasks: [
-              {
-                id: `${Date.now()}-1`,
-                title: "Understand the Basics",
-                description: `Read introductory chapters on ${formData.subject} and memorize key terminology.`,
-                estimatedHours: 4,
-              },
-              {
-                id: `${Date.now()}-2`,
-                title: "Practice Exercises",
-                description: `Complete foundational exercises on ${formData.subject} to solidify understanding.`,
-                estimatedHours: 6,
-              },
-            ],
-          },
-          {
-            phaseName: "Phase 2: Advanced Application",
-            tasks: [
-              {
-                id: `${Date.now()}-3`,
-                title: "Complex Problem Solving",
-                description: `Tackle advanced scenarios and case studies for ${formData.subject}.`,
-                estimatedHours: 8,
-              },
-              {
-                id: `${Date.now()}-4`,
-                title: "Mock Assessment",
-                description: "Take a timed practice test covering all previous materials.",
-                estimatedHours: 3,
-              },
-            ],
-          },
-        ],
-        dailySchedule: [
-          `Allocate ${formData.dailyStudyTime} hours strictly to deep work without distractions.`,
-          "First 30 mins: Review notes from the previous day.",
-          "Middle blocks (45 min each): Focus on new material and active recall.",
-          "Last 15 mins: Summarize what you learned today.",
-        ],
-        revisionStrategy: "Implement spaced repetition by reviewing difficult concepts 1 day, 3 days, and 1 week after first learning them. Focus heavily on practice testing rather than passive reading.",
-      };
+      if (genRes.success) {
+        setPreviewPlan(genRes.data);
+        setOriginalFormData(formData);
+        setIsFormVisible(false);
+        toast.success("AI Study Plan preview generated!");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to generate AI study plan.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
-      // Store plan details in serialized description to keep original schema representation intact
+  const handleRegenerate = async () => {
+    if (!originalFormData) return;
+    setIsGenerating(true);
+    try {
+      const genRes = await apiClient.post<{ success: boolean; data: PlannerResponse }>(
+        "/api/study-plans/generate",
+        originalFormData
+      );
+
+      if (genRes.success) {
+        setPreviewPlan(genRes.data);
+        toast.success("New AI Study Plan regenerated!");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to regenerate study plan.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSavePlan = async () => {
+    if (!previewPlan || !originalFormData) return;
+    setIsSaving(true);
+    try {
       const descriptionObj = {
-        subject: formData.subject,
-        goal: formData.goal,
-        skillLevel: formData.skillLevel,
-        dailyStudyTime: formData.dailyStudyTime,
-        revisionStrategy: mockResponse.revisionStrategy,
-        dailySchedule: mockResponse.dailySchedule,
-        roadmap: mockResponse.roadmap,
+        subject: originalFormData.subject,
+        goal: originalFormData.goal,
+        skillLevel: originalFormData.skillLevel,
+        dailyStudyTime: originalFormData.dailyStudyTime,
+        preferredStudyDays: originalFormData.preferredStudyDays,
+        weakTopics: originalFormData.weakTopics,
+        strongTopics: originalFormData.strongTopics,
+        preferredLearningStyle: originalFormData.preferredLearningStyle,
+        additionalInstructions: originalFormData.additionalInstructions,
+        planLength: originalFormData.planLength,
+        revisionStrategy: previewPlan.revisionStrategy,
+        dailySchedule: previewPlan.dailySchedule,
+        roadmap: previewPlan.roadmap,
       };
 
-      const tasksPayload = mockResponse.roadmap.flatMap((phase) =>
+      const tasksPayload = previewPlan.roadmap.flatMap((phase) =>
         phase.tasks.map((t) => ({
           id: t.id,
           title: t.title,
@@ -131,24 +137,25 @@ export default function PlannerPage() {
 
       // Create new study plan in Express backend
       const res = await apiClient.post<{ success: boolean; data: BackendStudyPlan }>("/api/study-plans", {
-        title: `Study Plan: ${formData.subject}`,
+        title: `Study Plan: ${originalFormData.subject}`,
         description: JSON.stringify(descriptionObj),
         startDate: new Date(),
-        endDate: new Date(formData.examDate),
-        topics: mockResponse.dailySchedule,
+        endDate: new Date(originalFormData.examDate),
+        topics: previewPlan.dailySchedule,
         tasks: tasksPayload,
       });
 
       if (res.success) {
         setPlans((prev) => [res.data, ...prev]);
         setSelectedPlan(res.data);
-        setIsGenerating(false);
-        toast.success("Study plan generated and saved successfully!");
+        setPreviewPlan(null);
+        setOriginalFormData(null);
+        toast.success("Study plan saved successfully!");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate and save study plan.");
+      toast.error(err.message || "Failed to save study plan.");
     } finally {
-      setIsGenerating(false);
+      setIsSaving(false);
     }
   };
 
@@ -172,7 +179,6 @@ export default function PlannerPage() {
     } catch (err: any) {
       console.error("Failed to update task:", err);
       toast.error("Failed to sync task status with backend.");
-      // Rollback on error
       fetchPlans();
     }
   };
@@ -193,7 +199,6 @@ export default function PlannerPage() {
     }
   };
 
-  // Reconstruct PlannerResponse schema from serialized description object and current task status
   const getReconstructedPlanResponse = (plan: BackendStudyPlan): PlannerResponse | null => {
     try {
       const details = JSON.parse(plan.description);
@@ -232,8 +237,8 @@ export default function PlannerPage() {
             Let our AI analyze your goals and generate a custom-tailored learning roadmap.
           </p>
         </div>
-        {!selectedPlan && !isGenerating && plans.length > 0 && (
-          <Button onClick={() => setIsGenerating(true)} className="flex items-center gap-2">
+        {!selectedPlan && !previewPlan && !isFormVisible && !isGenerating && (
+          <Button onClick={() => setIsFormVisible(true)} className="flex items-center gap-2">
             <Plus className="h-4 w-4" /> Generate New Plan
           </Button>
         )}
@@ -258,9 +263,56 @@ export default function PlannerPage() {
           </CardContent>
         </Card>
       ) : isGenerating ? (
-        <PlannerForm onSubmit={handleGeneratePlan} isLoading={isGenerating} />
+        <div className="flex flex-col items-center justify-center p-20 space-y-4 border border-dashed rounded-xl bg-card/30 backdrop-blur-sm">
+          <RefreshCw className="h-12 w-12 text-primary animate-spin" />
+          <div className="text-center space-y-1">
+            <h3 className="text-lg font-bold text-foreground">AI Architect is Reasoning</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Analyzing subject materials, allocating study time limits, and prioritizing weak concepts...
+            </p>
+          </div>
+        </div>
+      ) : previewPlan && originalFormData ? (
+        // Generated plan preview state
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-muted/40 rounded-xl border border-border/80">
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse" />
+              <span className="text-sm font-semibold text-foreground">Unsaved Study Plan Preview</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => { setPreviewPlan(null); setOriginalFormData(null); }} className="flex items-center gap-1.5">
+                <X className="h-4 w-4" /> Discard
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleRegenerate} className="flex items-center gap-1.5">
+                <RefreshCw className="h-4 w-4" /> Regenerate
+              </Button>
+              <Button size="sm" onClick={handleSavePlan} disabled={isSaving} className="flex items-center gap-1.5">
+                {isSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save to Study Plans
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-5 bg-card/40 backdrop-blur-md rounded-xl border border-border/80 space-y-1">
+            <h2 className="text-2xl font-bold text-foreground">Study Plan: {originalFormData.subject}</h2>
+            <p className="text-sm text-muted-foreground">Goal: {originalFormData.goal}</p>
+          </div>
+
+          <PlannerRoadmap plan={previewPlan} />
+        </div>
+      ) : isFormVisible ? (
+        <div className="space-y-4">
+          <button
+            onClick={() => setIsFormVisible(false)}
+            className="text-sm font-medium text-primary hover:underline flex items-center gap-1.5 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to saved plans
+          </button>
+          <PlannerForm onSubmit={handleGeneratePlan} isLoading={isGenerating} />
+        </div>
       ) : selectedPlan ? (
-        // Detailed roadmap view
+        // Saved plan details view
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <button
@@ -308,7 +360,7 @@ export default function PlannerPage() {
         </div>
       ) : plans.length === 0 ? (
         // Empty state
-        <Card className="border-dashed border-2 p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto">
+        <Card className="border-dashed border-2 p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto bg-card/30">
           <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Award className="h-6 w-6 text-primary" />
           </div>
@@ -318,7 +370,7 @@ export default function PlannerPage() {
               You haven't generated any study plans yet. Create one now to map out your study goals!
             </p>
           </div>
-          <Button onClick={() => setIsGenerating(true)} className="flex items-center gap-2">
+          <Button onClick={() => setIsFormVisible(true)} className="flex items-center gap-2">
             <Plus className="h-4 w-4" /> Create Your First Plan
           </Button>
         </Card>
@@ -334,7 +386,7 @@ export default function PlannerPage() {
               <Card
                 key={plan._id}
                 onClick={() => setSelectedPlan(plan)}
-                className="bg-card/50 backdrop-blur-md border-border/80 hover:border-primary/50 transition-all flex flex-col justify-between cursor-pointer group"
+                className="bg-card/50 backdrop-blur-md border-border/80 hover:border-primary/50 transition-all flex flex-col justify-between cursor-pointer group shadow-sm hover:shadow-md"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -368,7 +420,7 @@ export default function PlannerPage() {
                     </div>
                     <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-primary transition-all duration-500 animate-out"
+                        className="h-full bg-primary transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>

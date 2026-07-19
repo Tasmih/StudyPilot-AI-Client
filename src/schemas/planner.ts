@@ -8,6 +8,16 @@ export const plannerSchema = z.object({
     message: "Please select your current skill level.",
   }),
   dailyStudyTime: z.number().min(1, "You must study for at least 1 hour.").max(24, "Invalid study time."),
+  preferredStudyDays: z.array(z.string()).optional(),
+  weakTopics: z.string().optional(),
+  strongTopics: z.string().optional(),
+  preferredLearningStyle: z.enum(["visual", "auditory", "readwrite", "kinesthetic", "standard"], {
+    message: "Please select your learning style.",
+  }).optional(),
+  additionalInstructions: z.string().optional(),
+  planLength: z.enum(["short", "standard", "detailed"], {
+    message: "Please select a plan length.",
+  }),
 });
 
 export type PlannerFormData = z.infer<typeof plannerSchema>;
