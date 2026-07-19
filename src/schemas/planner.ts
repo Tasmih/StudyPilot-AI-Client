@@ -18,6 +18,7 @@ export interface StudyTask {
   title: string;
   description: string;
   estimatedHours: number;
+  completed?: boolean;
 }
 
 export interface RoadmapPhase {
