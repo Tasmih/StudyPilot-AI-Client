@@ -29,7 +29,7 @@ export function DashboardActivity({ activities }: DashboardActivityProps) {
         {activities.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <History className="h-10 w-10 text-muted/50 mb-3" />
-            <p className="text-sm text-muted-foreground">No recent activity foun.</p>
+            <p className="text-sm text-muted-foreground">No recent activity found.</p>
           </div>
         ) : (
           <div className="space-y-6">
