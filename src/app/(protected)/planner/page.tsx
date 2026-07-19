@@ -45,6 +45,12 @@ export default function PlannerPage() {
   // Load plans on mount
   useEffect(() => {
     fetchPlans();
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("subject")) {
+        setIsFormVisible(true);
+      }
+    }
   }, []);
 
   const fetchPlans = async () => {

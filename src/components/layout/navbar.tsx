@@ -26,7 +26,8 @@ export function Navbar() {
   const loggedOutRoutes = [
     { name: "Home", href: "/", icon: Home },
     { name: "Explore", href: "/explore", icon: Compass },
-    { name: "About", href: "/#about", icon: Info },
+    { name: "About", href: "/about", icon: Info },
+    { name: "Contact", href: "/contact", icon: Mail },
   ];
 
   const loggedInRoutes = [
@@ -37,6 +38,8 @@ export function Navbar() {
     { name: "AI Tutor", href: "/assistant", icon: MessageSquare },
     { name: "Recommendations", href: "/recommendations", icon: Sparkles },
     { name: "Profile", href: "/profile", icon: User },
+    { name: "About", href: "/about", icon: Info },
+    { name: "Contact", href: "/contact", icon: Mail },
   ];
 
   const routes = session ? loggedInRoutes : loggedOutRoutes;

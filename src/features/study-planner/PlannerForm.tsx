@@ -46,6 +46,28 @@ export function PlannerForm({ onSubmit, isLoading }: PlannerFormProps) {
 
   const selectedDays = watch("preferredStudyDays") || [];
 
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const subjectParam = searchParams.get("subject");
+    const difficultyParam = searchParams.get("difficulty");
+    const instructionsParam = searchParams.get("instructions");
+
+    if (subjectParam) {
+      setValue("subject", subjectParam);
+    }
+    if (difficultyParam) {
+      const diff = difficultyParam.toLowerCase();
+      if (diff === "beginner" || diff === "intermediate" || diff === "advanced") {
+        setValue("skillLevel", diff as any);
+      }
+    }
+    if (instructionsParam) {
+      setValue("goal", `Study and master: ${subjectParam || "this topic"}. Goal: ${instructionsParam}`);
+      setValue("additionalInstructions", `Origin: Course Catalog template.`);
+    }
+  }, [setValue]);
+
   const handleDayToggle = (dayId: string) => {
     if (selectedDays.includes(dayId)) {
       setValue("preferredStudyDays", selectedDays.filter(d => d !== dayId));

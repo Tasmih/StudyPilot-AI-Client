@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { cn } from "@/utils/cn";
 
 interface RecommendationTopic {
   topic: string;
