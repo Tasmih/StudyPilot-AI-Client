@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 interface ExploreTemplate {
   id: string;
@@ -55,18 +56,12 @@ const SORT_OPTIONS = [
 ];
 
 export default function ExplorePage() {
-  const [templates, setTemplates] = useState<ExploreTemplate[]>([]);
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Debounced tracker
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Debounce search term change
   useEffect(() => {
@@ -78,10 +73,9 @@ export default function ExplorePage() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  const fetchTemplates = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["templates", search, category, difficulty, sort, page],
+    queryFn: async () => {
       const queryParams = new URLSearchParams();
       queryParams.append("page", page.toString());
       queryParams.append("limit", "12");
@@ -100,23 +94,14 @@ export default function ExplorePage() {
           totalPages: number;
         };
       }>(`/api/explore?${queryParams.toString()}`);
+      return res;
+    },
+    placeholderData: (previousData) => previousData,
+  });
 
-      if (res.success) {
-        setTemplates(res.data);
-        setTotalPages(res.pagination.totalPages);
-        setTotal(res.pagination.total);
-      }
-    } catch (err: any) {
-      console.error("Explore Catalog fetch error:", err);
-      setError(err.message || "Failed to load study templates from the database.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTemplates();
-  }, [search, category, difficulty, sort, page]);
+  const templates = data?.data || [];
+  const totalPages = data?.pagination?.totalPages || 1;
+  const total = data?.pagination?.total || 0;
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -319,9 +304,9 @@ export default function ExplorePage() {
                 <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
                 <div className="space-y-1">
                   <h3 className="text-lg font-bold text-foreground">Catalog Error</h3>
-                  <p className="text-sm text-muted-foreground">{error}</p>
+                  <p className="text-sm text-muted-foreground">{error?.message}</p>
                 </div>
-                <Button onClick={fetchTemplates} variant="outline" className="mt-2">
+                <Button onClick={() => refetch()} variant="outline" className="mt-2">
                   Retry Loading
                 </Button>
               </CardContent>
