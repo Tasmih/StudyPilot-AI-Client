@@ -9,6 +9,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/proxy/:path*',
+        destination: 'https://studypilot-ai-server.onrender.com/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

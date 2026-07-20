@@ -1,4 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const isProduction = process.env.NODE_ENV === "production";
+// Use same-origin proxy in production for cross-domain cookies; otherwise use direct URL
+const API_URL = isProduction 
+  ? "/proxy" 
+  : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   data?: any;
