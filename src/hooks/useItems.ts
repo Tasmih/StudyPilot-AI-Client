@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { itemService } from "@/services/itemService";
 import { ItemFormData } from "@/schemas/item";
-import { toast } from "react-toastify";
+import { showSuccess, showError } from "@/utils/notifications";
 
 export function useItems() {
   const queryClient = useQueryClient();
@@ -15,10 +15,22 @@ export function useItems() {
     mutationFn: (data: ItemFormData) => itemService.createItem(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      toast.success("Study item added successfully!");
+      showSuccess("Study item added successfully!");
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to add study item.");
+      showError(error.message || "Failed to add study item.");
+    },
+  });
+
+  const updateItemMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ItemFormData }) => 
+      itemService.updateItem(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+      showSuccess("Item updated successfully!");
+    },
+    onError: (error: any) => {
+      showError(error.message || "Failed to update item.");
     },
   });
 
@@ -26,10 +38,10 @@ export function useItems() {
     mutationFn: (id: string) => itemService.deleteItem(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      toast.success("Item deleted permanently.");
+      showSuccess("Item deleted permanently.");
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to delete item.");
+      showError(error.message || "Failed to delete item.");
     },
   });
 
@@ -40,6 +52,8 @@ export function useItems() {
     error: getItemsQuery.error,
     createItem: createItemMutation.mutateAsync,
     isCreating: createItemMutation.isPending,
+    updateItem: updateItemMutation.mutateAsync,
+    isUpdating: updateItemMutation.isPending,
     deleteItem: deleteItemMutation.mutateAsync,
     isDeleting: deleteItemMutation.isPending,
   };

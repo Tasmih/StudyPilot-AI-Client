@@ -25,8 +25,8 @@ export default function RootLayout({
           {children}
           <ToastContainer 
             position="bottom-right"
-            theme="dark"
-            toastClassName="bg-card text-foreground border border-border/50 shadow-xl rounded-lg"
+            theme="light"
+            toastClassName="!bg-card !text-foreground !border !border-border/80 !shadow-lg !rounded-xl !font-sans"
           />
         </Providers>
       </body>

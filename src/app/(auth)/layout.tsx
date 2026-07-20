@@ -16,7 +16,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <div className="w-full max-w-md">
         {children}
       </div>
-      <ToastContainer position="top-center" autoClose={4000} theme="colored" />
+      <ToastContainer 
+        position="bottom-right" 
+        autoClose={3500} 
+        theme="light" 
+        toastClassName="!bg-card !text-foreground !border !border-border/80 !shadow-lg !rounded-xl !font-sans"
+      />
     </div>
   );
 }

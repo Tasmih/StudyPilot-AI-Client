@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Trash2, Calendar, LayoutList, Tag } from "lucide-react";
+import { Search, Filter, Trash2, Calendar, LayoutList, Tag, Pencil } from "lucide-react";
 import { useItems } from "@/hooks/useItems";
 import { StudyItem } from "@/schemas/item";
 import { Loading } from "@/components/ui/loading";
@@ -11,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/utils/cn";
+import { confirmDelete } from "@/utils/notifications";
+import Link from "next/link";
 
 export function ManageItemsList() {
   const { items, isLoading, isError, deleteItem, isDeleting } = useItems();
@@ -33,22 +34,14 @@ export function ManageItemsList() {
     );
   }
 
-  const handleDelete = (id: string, title: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Do you really want to delete "${title}"? This action cannot be undone.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#3b82f6",
-      confirmButtonText: "Yes, delete it!",
-      background: "#0F172A",
-      color: "#F8FAFC",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteItem(id);
-      }
-    });
+  const handleDelete = async (id: string, title: string) => {
+    const isConfirmed = await confirmDelete(
+      "Are you sure?",
+      `Do you really want to delete "${title}"? This action cannot be undone.`
+    );
+    if (isConfirmed) {
+      deleteItem(id);
+    }
   };
 
   const filteredItems = items.filter((item) => {
@@ -154,7 +147,18 @@ export function ManageItemsList() {
                         </span>
                       </div>
                       
-                      <div className="flex justify-end pt-2">
+                      <div className="flex justify-between items-center pt-2">
+                        <Link href={`/items/edit/${item.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2 text-xs font-semibold"
+                          >
+                            <Pencil className="h-3.5 w-3.5 mr-1" />
+                            Edit
+                          </Button>
+                        </Link>
+                        
                         <Button
                           variant="ghost"
                           size="sm"
