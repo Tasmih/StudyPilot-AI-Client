@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/utils/cn";
-import { confirmDelete } from "@/utils/notifications";
-import Link from "next/link";
+import { confirmDelete, confirmEditPrompt } from "@/utils/notifications";
+import { useRouter } from "next/navigation";
 
 export function ManageItemsList() {
+  const router = useRouter();
   const { items, isLoading, isError, deleteItem, isDeleting } = useItems();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -41,6 +42,16 @@ export function ManageItemsList() {
     );
     if (isConfirmed) {
       deleteItem(id);
+    }
+  };
+
+  const handleEdit = async (id: string) => {
+    const isConfirmed = await confirmEditPrompt(
+      "Edit Study Item?",
+      "Do you want to edit this study item?"
+    );
+    if (isConfirmed) {
+      router.push(`/items/edit/${id}`);
     }
   };
 
@@ -148,16 +159,15 @@ export function ManageItemsList() {
                       </div>
                       
                       <div className="flex justify-between items-center pt-2">
-                        <Link href={`/items/edit/${item.id}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 px-2 text-xs font-semibold"
-                          >
-                            <Pencil className="h-3.5 w-3.5 mr-1" />
-                            Edit
-                          </Button>
-                        </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(item.id)}
+                          className="h-8 px-2 text-xs font-semibold"
+                        >
+                          <Pencil className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
                         
                         <Button
                           variant="ghost"

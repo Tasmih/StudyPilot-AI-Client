@@ -80,3 +80,27 @@ export const showAlert = async (title: string, text: string, icon: "success" | "
     background: "var(--card)",
   });
 };
+
+// Reusable SweetAlert confirm edit utility
+export const confirmEditPrompt = async (title: string, text: string) => {
+  const result = await Swal.fire({
+    title,
+    text,
+    icon: "question",
+    showCancelButton: true,
+    buttonsStyling: false,
+    customClass: {
+      popup: "rounded-[24px] border border-border/80 shadow-2xl font-sans bg-card text-foreground p-6 max-w-sm",
+      title: "font-extrabold text-foreground text-xl pt-2 block",
+      htmlContainer: "text-muted-foreground text-sm pt-2 leading-relaxed block",
+      actions: "flex justify-end gap-3 pt-4 w-full",
+      confirmButton: "bg-primary text-white font-bold px-4 py-2.5 rounded-xl hover:bg-primary/90 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-sm min-w-[100px]",
+      cancelButton: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-bold px-4 py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm min-w-[100px]",
+    },
+    confirmButtonText: "Yes, Edit",
+    cancelButtonText: "Cancel",
+    background: "var(--card)",
+  });
+  
+  return result.isConfirmed;
+};
