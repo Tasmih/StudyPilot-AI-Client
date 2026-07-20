@@ -11,7 +11,7 @@ import {
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
-
+import { HeroSection } from "@/components/public/hero-section";
 export default function HomePage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -99,57 +99,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* 1. Hero Section */}
-        <section className="relative py-20 md:py-32 overflow-hidden border-b border-border/55">
-          <div className="absolute inset-0 bg-radial-gradient from-primary/5 via-transparent to-transparent opacity-50" />
-          <div className="container relative max-w-6xl mx-auto px-4 text-center space-y-8 flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-semibold mx-auto"
-            >
-              <Star className="h-3.5 w-3.5 fill-current animate-pulse" />
-              State-of-the-art educational SaaS
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-4xl sm:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight"
-            >
-              Master Your Exams with <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary">StudyPilot AI</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
-            >
-              Your ultimate premium AI study companion. Generate personalized study roadmaps, chat with AI tutors, and track your academic progress in real-time.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4"
-            >
-              <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto flex items-center gap-2 group shadow-lg">
-                  Get Started Free
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto bg-card/40 backdrop-blur-sm">
-                  Sign In
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
-        </section>
+        <HeroSection />
 
         {/* 2. How StudyPilot AI Works Section */}
         <section className="py-20 border-b border-border/55 bg-muted/10">
