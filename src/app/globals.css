@@ -114,3 +114,81 @@
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 }
+
+/* Custom SweetAlert2 Theme Overrides for StudyPilot AI */
+.swal2-popup.swal2-modal {
+  background-color: #0f172a !important; /* Deep slate dark background */
+  border: 1px solid #1e293b !important; /* Elegant slate border */
+  border-radius: 24px !important; /* Matching app's rounded-2xl style */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important; /* Premium drop shadow */
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+  color: #f8fafc !important; /* Light text color */
+  padding: 1.5rem !important;
+}
+
+.swal2-title {
+  color: #ffffff !important; /* High contrast white title */
+  font-weight: 800 !important; /* Extrabold */
+  font-size: 1.25rem !important; /* text-xl */
+  padding-top: 0.5rem !important;
+}
+
+.swal2-html-container {
+  color: #cbd5e1 !important; /* Softer text color (slate-300) */
+  font-size: 0.875rem !important; /* text-sm */
+  line-height: 1.625 !important; /* leading-relaxed */
+  padding-top: 0.5rem !important;
+}
+
+/* Custom buttons styling to replace SweetAlert defaults */
+.swal2-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+  padding-top: 1rem !important;
+  width: 100% !important;
+}
+
+/* Confirm buttons overrides */
+.swal2-confirm.swal2-styled {
+  font-weight: 700 !important;
+  padding: 0.625rem 1.25rem !important;
+  border-radius: 12px !important; /* rounded-xl */
+  font-size: 0.875rem !important; /* text-sm */
+  min-width: 100px !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+  color: #ffffff !important;
+}
+
+/* For Edit Dialogs (which are indigo) */
+.swal2-confirm.swal2-styled.swal2-custom-edit {
+  background-color: #4f46e5 !important; /* StudyPilot primary indigo */
+}
+.swal2-confirm.swal2-styled.swal2-custom-edit:hover {
+  background-color: #4338ca !important;
+}
+
+/* For Delete Dialogs (which are rose/red) */
+.swal2-confirm.swal2-styled.swal2-custom-delete {
+  background-color: #e11d48 !important; /* rose-600 */
+}
+.swal2-confirm.swal2-styled.swal2-custom-delete:hover {
+  background-color: #be123c !important; /* rose-700 */
+}
+
+/* Cancel buttons overrides */
+.swal2-cancel.swal2-styled.swal2-custom-cancel {
+  background-color: #334155 !important; /* slate-700 */
+  color: #f1f5f9 !important; /* slate-100 */
+  font-weight: 700 !important;
+  padding: 0.625rem 1.25rem !important;
+  border-radius: 12px !important;
+  font-size: 0.875rem !important;
+  min-width: 100px !important;
+  transition: all 0.2s ease-in-out !important;
+  cursor: pointer !important;
+}
+.swal2-cancel.swal2-styled.swal2-custom-cancel:hover {
+  background-color: #475569 !important; /* slate-600 */
+}
