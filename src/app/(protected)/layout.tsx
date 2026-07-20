@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LayoutDashboard, Calendar, MessageSquare, ListTodo, 
-  Settings, LogOut, Menu, X, BrainCircuit, User, Sparkles
+  Settings, LogOut, Menu, X, BrainCircuit, User, Sparkles, Compass
 } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/utils/cn";
@@ -15,6 +15,7 @@ import { Loading } from "@/components/ui/loading";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Explore", href: "/explore", icon: Compass },
   { name: "AI Planner", href: "/planner", icon: Calendar },
   { name: "AI Assistant", href: "/assistant", icon: MessageSquare },
   { name: "Recommendations", href: "/recommendations", icon: Sparkles },
