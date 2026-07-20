@@ -42,8 +42,7 @@ export default function LoginPage() {
         toast.error(result.error.message || "Invalid login credentials.");
       } else {
         toast.success("Welcome back to StudyPilot AI!");
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } catch (error: any) {
       toast.error(error.message || "An unexpected error occurred.");
