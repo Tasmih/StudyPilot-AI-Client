@@ -207,8 +207,8 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Welcome back, {profile?.name || session?.user?.name || "Student"}! 👋
           </h1>
-          <p className="text-muted-foreground">
-            Here's an overview of your study progress and AI insights.
+          <p className="text-muted-foreground text-sm">
+            Here's an overview of your study progress. All metrics, task completions, and visual progress charts are dynamically calculated and loaded directly from your secure study plans in MongoDB.
           </p>
         </div>
 
@@ -264,21 +264,28 @@ export default function DashboardPage() {
       {totalStudyPlans === 0 ? (
         // Empty state
         <motion.div variants={itemVariants}>
-          <Card className="border-dashed border-2 p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto">
+          <Card className="border-dashed border-2 p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto bg-card/30 rounded-[24px]">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-primary" />
+              <Sparkles className="h-6 w-6 text-primary animate-pulse" />
             </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-foreground">No Saved Roadmaps</h3>
-              <p className="text-sm text-muted-foreground">
-                You haven't generated any study plans yet. Create a roadmap now to track your tasks and visual charts.
+            <div className="space-y-2">
+              <h3 className="text-lg font-bold text-foreground">No Saved Roadmaps Found</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your study progress statistics are calculated dynamically from your personal study plans saved in MongoDB. Since you don't have any active plans yet, please generate one to start learning!
               </p>
             </div>
-            <Link href="/planner">
-              <Button className="flex items-center gap-2">
-                <PlusCircle className="h-4 w-4" /> Create Study Plan
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
+              <Link href="/planner" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold px-5">
+                  <PlusCircle className="h-4 w-4" /> Create Study Plan
+                </Button>
+              </Link>
+              <Link href="/explore" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center gap-2 font-semibold px-5">
+                  <BookOpen className="h-4 w-4" /> Browse Catalog Templates
+                </Button>
+              </Link>
+            </div>
           </Card>
         </motion.div>
       ) : (

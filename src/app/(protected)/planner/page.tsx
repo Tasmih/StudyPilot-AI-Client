@@ -156,7 +156,7 @@ export default function PlannerPage() {
         setSelectedPlan(res.data);
         setPreviewPlan(null);
         setOriginalFormData(null);
-        showSuccess("Study plan saved successfully!");
+        showSuccess("Your personalized study plan has been saved to your account.");
       }
     } catch (err: any) {
       showError(err.message || "Failed to save study plan.");
@@ -341,19 +341,30 @@ export default function PlannerPage() {
       ) : previewPlan && originalFormData ? (
         // Generated plan preview state
         <div className="space-y-6">
+          <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl space-y-2">
+            <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400 font-bold text-sm">
+              <span className="h-2 w-2 rounded-full bg-yellow-500 animate-ping" />
+              AI Study Plan Generated Successfully (Preview Mode)
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Review your customized learning roadmap below. This plan is currently a <strong>preview</strong> and is not yet persisted. You can edit the inputs, regenerate, or click <strong>Save to Study Plans</strong> to store this plan in MongoDB and sync it with your Dashboard, AI Tutor, and Recommendations engines.
+            </p>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-muted/40 rounded-xl border border-border/80">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-accent animate-pulse" />
-              <span className="text-sm font-semibold text-foreground">Unsaved Study Plan Preview</span>
+              <Button variant="outline" size="sm" onClick={() => { setIsFormVisible(true); setPreviewPlan(null); }} className="flex items-center gap-1.5">
+                <ArrowLeft className="h-4 w-4" /> Edit Inputs
+              </Button>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => { setPreviewPlan(null); setOriginalFormData(null); }} className="flex items-center gap-1.5">
+              <Button variant="ghost" size="sm" onClick={() => { setPreviewPlan(null); setOriginalFormData(null); }} className="flex items-center gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10">
                 <X className="h-4 w-4" /> Discard
               </Button>
               <Button variant="outline" size="sm" onClick={handleRegenerate} className="flex items-center gap-1.5">
                 <RefreshCw className="h-4 w-4" /> Regenerate
               </Button>
-              <Button size="sm" onClick={handleSavePlan} disabled={isSaving} className="flex items-center gap-1.5">
+              <Button size="sm" onClick={handleSavePlan} disabled={isSaving} className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white">
                 {isSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 Save to Study Plans
               </Button>

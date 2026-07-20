@@ -416,8 +416,8 @@ export function ChatInterface() {
                   <h3 className="text-2xl font-bold tracking-tight text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Meet your StudyPilot AI Tutor
                   </h3>
-                  <p className="mx-auto max-w-md text-sm text-muted-foreground">
-                    Ask academic questions, resolve doubts, generate custom practice quizzes, or review targets in your active study plan.
+                  <p className="mx-auto max-w-md text-sm text-muted-foreground leading-relaxed">
+                    Ask academic questions, resolve doubts, or generate practice quizzes. Your AI Tutor is <strong>directly connected to your MongoDB study plans</strong>, dynamically reading your active task checklists and progress updates in real-time to contextualize its responses.
                   </p>
                 </div>
                 <div className="pt-6">

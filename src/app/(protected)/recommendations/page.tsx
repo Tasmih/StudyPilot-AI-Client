@@ -207,8 +207,8 @@ export default function RecommendationsPage() {
             <Sparkles className="h-8 w-8 text-primary" />
             Adaptive Recommendations
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Real-time personalized study strategies and topics customized to your tasks progress.
+          <p className="text-muted-foreground mt-1 text-sm">
+            AI analysis of your active study plans and checklists in MongoDB. Recommendations update in real-time as you check off tasks.
           </p>
         </div>
 

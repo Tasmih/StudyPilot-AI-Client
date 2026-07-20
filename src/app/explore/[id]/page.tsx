@@ -316,15 +316,13 @@ export default function ExploreDetailsPage({ params }: PageProps) {
               </div>
 
               {/* Quick Template Guidelines Section */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-                  <Compass className="h-4 w-4 text-primary" /> Learning Roadmap Roadmap Guidelines
+              <div className="space-y-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                  <Compass className="h-4 w-4 text-primary" /> Template Reference Blueprint Notice
                 </h4>
-                <ul className="list-disc pl-5 text-xs text-muted-foreground space-y-2 leading-relaxed">
-                  <li>This template provides a standardized starting checklist to master the key themes of this program.</li>
-                  <li>Clicking the active CTA button below will auto-populate your personal AI Study Planner with the subject parameters.</li>
-                  <li>You will be able to customize your preferred study days, learning styles (visual, reading, etc.), and schedule durations before launching the AI-generated plan.</li>
-                </ul>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong>Notice:</strong> This catalog template is a static reference blueprint. It is NOT a saved personal study plan. Clicking <strong>"Use This Template"</strong> will auto-populate your personal <strong>AI Study Planner</strong> where you can customize constraints (like study hours, weak topics, and timeline goals) and generate a personalized learning roadmap saved directly to your profile.
+                </p>
               </div>
 
               {/* Redirection CTA */}

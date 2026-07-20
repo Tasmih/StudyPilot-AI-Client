@@ -21,8 +21,8 @@ export default function ManageItemsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Manage Items</h1>
-          <p className="text-muted-foreground">
-            View, filter, and organize all your study materials and tasks.
+          <p className="text-muted-foreground text-sm">
+            Offline Sandbox: View, filter, and organize offline study materials or files. This is a standalone list stored locally in your browser (does not affect your AI-generated MongoDB study plans).
           </p>
         </div>
         <Link href="/items/add">
