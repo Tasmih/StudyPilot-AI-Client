@@ -11,8 +11,8 @@ export default function ManageItemsPage() {
       {/* Navigation action */}
       <div className="flex items-center">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/5 font-semibold transition-all">
+            <ArrowLeft className="h-4 w-4 text-primary" />
             Back to Home
           </Button>
         </Link>
