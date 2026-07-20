@@ -51,6 +51,7 @@ export default function ExploreDetailsPage({ params }: PageProps) {
   const [template, setTemplate] = useState<ExploreTemplate | null>(null);
   const [related, setRelated] = useState<ExploreTemplate[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const [relatedError, setRelatedError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [is404, setIs404] = useState(false);
@@ -84,6 +85,7 @@ export default function ExploreDetailsPage({ params }: PageProps) {
 
   const fetchRelated = async (categoryName: string) => {
     setIsLoadingRelated(true);
+    setRelatedError(null);
     try {
       const res = await apiClient.get<{
         success: boolean;
@@ -91,12 +93,15 @@ export default function ExploreDetailsPage({ params }: PageProps) {
       }>(`/api/explore?category=${encodeURIComponent(categoryName)}&limit=10`);
 
       if (res.success && res.data) {
-        // Filter out current template by ID and slice to first 3 related
-        const filtered = res.data.filter((item) => item.id !== id).slice(0, 3);
+        // Filter out current template by ID and slice to first 4 related
+        const filtered = res.data.filter((item) => item.id !== id).slice(0, 4);
         setRelated(filtered);
+      } else {
+        setRelatedError("Failed to fetch related study programs.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Related templates fetch error:", err);
+      setRelatedError(err.message || "Failed to load related study programs.");
     } finally {
       setIsLoadingRelated(false);
     }
@@ -350,8 +355,8 @@ export default function ExploreDetailsPage({ params }: PageProps) {
 
               {isLoadingRelated ? (
                 /* Related templates skeletons */
-                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {Array.from({ length: 3 }).map((_, i) => (
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
                     <Card key={i} className="animate-pulse flex flex-col justify-between h-[340px]">
                       <div className="h-40 bg-muted w-full" />
                       <div className="p-4 space-y-2">
@@ -361,12 +366,21 @@ export default function ExploreDetailsPage({ params }: PageProps) {
                     </Card>
                   ))}
                 </div>
+              ) : relatedError ? (
+                /* Error state for related */
+                <div className="p-4 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{relatedError}</span>
+                  <Button variant="ghost" size="sm" onClick={() => fetchRelated(template.category)} className="ml-auto text-xs py-1 h-auto text-destructive hover:bg-destructive/20">
+                    Retry
+                  </Button>
+                </div>
               ) : related.length === 0 ? (
                 /* Empty state */
                 <p className="text-xs text-muted-foreground italic">No other related study programs found in this category.</p>
               ) : (
                 /* Related Grid */
-                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {related.map((item) => (
                     <Card
                       key={item.id}
