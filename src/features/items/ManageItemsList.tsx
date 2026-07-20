@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Trash2, Calendar, LayoutList, Tag, Pencil } from "lucide-react";
+import { Search, Filter, Trash2, Calendar, LayoutList, Tag, Pencil, Eye } from "lucide-react";
 import { useItems } from "@/hooks/useItems";
 import { StudyItem } from "@/schemas/item";
 import { Loading } from "@/components/ui/loading";
@@ -12,12 +12,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/utils/cn";
 import { confirmDelete, confirmEditPrompt } from "@/utils/notifications";
 import { useRouter } from "next/navigation";
+import { Modal } from "@/components/ui/modal";
 
 export function ManageItemsList() {
   const router = useRouter();
   const { items, isLoading, isError, deleteItem, isDeleting } = useItems();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [selectedItem, setSelectedItem] = useState<StudyItem | null>(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -158,23 +161,34 @@ export function ManageItemsList() {
                         </span>
                       </div>
                       
-                      <div className="flex justify-between items-center pt-2">
+                      <div className="flex justify-between items-center pt-2 gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedItem(item);
+                            setIsViewOpen(true);
+                          }}
+                          className="h-8 px-2.5 text-xs font-semibold flex-1"
+                        >
+                          <Eye className="h-3.5 w-3.5 mr-1" />
+                          View
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleEdit(item.id)}
-                          className="h-8 px-2 text-xs font-semibold"
+                          className="h-8 px-2.5 text-xs font-semibold flex-1"
                         >
                           <Pencil className="h-3.5 w-3.5 mr-1" />
                           Edit
                         </Button>
-                        
                         <Button
                           variant="ghost"
                           size="sm"
                           disabled={isDeleting}
                           onClick={() => handleDelete(item.id, item.title)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2.5 flex-1"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />
                           Delete
@@ -188,6 +202,50 @@ export function ManageItemsList() {
           </AnimatePresence>
         </div>
       )}
+
+      <Modal
+        isOpen={isViewOpen}
+        onClose={() => {
+          setIsViewOpen(false);
+          setSelectedItem(null);
+        }}
+        title="View Item Details"
+      >
+        {selectedItem && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-xl font-bold text-foreground">{selectedItem.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">Created: {new Date(selectedItem.createdAt).toLocaleDateString()}</p>
+            </div>
+            
+            <div className="p-3.5 bg-muted/40 rounded-xl border border-border/50 space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description</div>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{selectedItem.description}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-muted/20 rounded-lg border border-border/40">
+                <span className="text-muted-foreground block mb-0.5">Category</span>
+                <span className="font-bold text-foreground">{selectedItem.category}</span>
+              </div>
+              <div className="p-3 bg-muted/20 rounded-lg border border-border/40">
+                <span className="text-muted-foreground block mb-0.5">Priority</span>
+                <span className="font-bold text-foreground capitalize">{selectedItem.priority}</span>
+              </div>
+              <div className="p-3 bg-muted/20 rounded-lg border border-border/40 col-span-2">
+                <span className="text-muted-foreground block mb-0.5">Target/Due Date</span>
+                <span className="font-bold text-foreground">{selectedItem.date}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button onClick={() => { setIsViewOpen(false); setSelectedItem(null); }}>
+                Close
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

@@ -19,16 +19,16 @@ export default function ManageItemsPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-col space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Manage Items</h1>
-          <p className="text-muted-foreground text-sm">
-            Offline Sandbox: View, filter, and organize offline study materials or files. This is a standalone list stored locally in your browser (does not affect your AI-generated MongoDB study plans).
+        <div className="flex-1 min-w-0 flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">My Items</h1>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            My Items is your personal item/task area. You can manually add and manage your own items here. Create and manage your own personal study items, tasks, or notes. These items are separate from Explore templates and AI-generated Study Plans.
           </p>
         </div>
-        <Link href="/items/add">
-          <Button className="w-full sm:w-auto">
-            <PlusCircle className="mr-2 h-5 w-5" />
-            Add New Item
+        <Link href="/items/add" className="shrink-0 whitespace-nowrap">
+          <Button className="w-full sm:w-auto shrink-0 whitespace-nowrap min-w-[130px] px-5 py-2.5 flex items-center justify-center font-bold">
+            <PlusCircle className="mr-2 h-5 w-5 shrink-0" />
+            Add Item
           </Button>
         </Link>
       </div>
