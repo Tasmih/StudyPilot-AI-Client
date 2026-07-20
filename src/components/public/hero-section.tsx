@@ -41,7 +41,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative flex min-h-[70vh] w-full flex-col items-center justify-center overflow-hidden bg-background py-20 lg:py-0">
+    <section className="relative flex min-h-[70vh] w-full flex-col items-center justify-center overflow-hidden bg-background pt-32 pb-20 lg:pt-40 lg:pb-32">
       {/* Decorative Background gradient */}
       <div className="absolute inset-0 z-0 bg-background-image-gradient-primary opacity-[0.03]" />
       
@@ -116,11 +116,44 @@ export function HeroSection() {
               <div className="h-4 w-24 rounded-full bg-muted/50" />
             </div>
             <div className="flex flex-1 flex-col space-y-4 pt-4">
-              <div className="h-8 w-3/4 rounded-md bg-muted/30" />
-              <div className="h-24 w-full rounded-md bg-primary/10" />
-              <div className="grid grid-cols-2 gap-4">
-                <div className="h-32 rounded-md bg-secondary/10" />
-                <div className="h-32 rounded-md bg-accent/10" />
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="h-6 w-1/2 rounded-md bg-muted/40" />
+                <div className="h-6 w-16 rounded-full bg-primary/10" />
+              </div>
+              
+              {/* Progress Card */}
+              <div className="flex flex-col space-y-3 rounded-xl border bg-background/50 p-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="h-3 w-24 rounded bg-muted-foreground/30" />
+                    <div className="h-2 w-full max-w-[8rem] rounded bg-muted/40" />
+                  </div>
+                </div>
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-full w-[75%] rounded-full bg-gradient-to-r from-primary to-accent" />
+                </div>
+              </div>
+
+              {/* Grid of smaller stats */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col space-y-2 rounded-xl border bg-background/50 p-3 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <BrainCircuit className="h-4 w-4 text-secondary" />
+                    <div className="h-3 w-16 rounded bg-muted-foreground/30" />
+                  </div>
+                  <div className="h-6 w-12 rounded bg-foreground/10" />
+                </div>
+                <div className="flex flex-col space-y-2 rounded-xl border bg-background/50 p-3 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-accent" />
+                    <div className="h-3 w-16 rounded bg-muted-foreground/30" />
+                  </div>
+                  <div className="h-6 w-12 rounded bg-foreground/10" />
+                </div>
               </div>
             </div>
           </motion.div>

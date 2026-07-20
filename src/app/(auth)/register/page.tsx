@@ -54,7 +54,7 @@ export default function RegisterPage() {
     <Card className="border-0 shadow-2xl ring-1 ring-border/50">
       <CardHeader className="space-y-2 text-center">
         <CardTitle className="text-3xl font-bold tracking-tight">Create an account</CardTitle>
-        <CardDescription className="text-base">
+        <CardDescription className="text-base text-slate-600 dark:text-slate-400">
           Join StudyPilot AI to supercharge your learning journey.
         </CardDescription>
       </CardHeader>
@@ -63,11 +63,11 @@ export default function RegisterPage() {
           
           <div className="space-y-2">
             <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <User className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="text"
                 placeholder="Full Name"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading}
                 {...register("name")}
               />
@@ -79,11 +79,11 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="email"
                 placeholder="name@example.com"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading}
                 {...register("email")}
               />
@@ -95,11 +95,11 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="password"
                 placeholder="Password (min 8 characters)"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading}
                 {...register("password")}
               />
@@ -111,11 +111,11 @@ export default function RegisterPage() {
 
           <div className="space-y-2">
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="password"
                 placeholder="Confirm Password"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading}
                 {...register("confirmPassword")}
               />

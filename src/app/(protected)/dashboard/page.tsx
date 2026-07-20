@@ -7,7 +7,7 @@ import { apiClient } from "@/lib/api-client";
 import { Loading } from "@/components/ui/loading";
 import { 
   BookOpen, Activity, Award, ListTodo, CheckCircle2, Percent,
-  AlertCircle, ArrowRight, PlayCircle, PlusCircle, CheckSquare, Square, Sparkles, Clock
+  AlertCircle, ArrowRight, PlayCircle, PlusCircle, CheckSquare, Square, Sparkles, Clock, Home
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,12 +134,28 @@ export default function DashboardPage() {
 
   if (isProfileLoading || isPlansLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-background fixed inset-0 z-50">
-        <div className="flex flex-col items-center space-y-4">
-          <Loading size="lg" className="text-primary" />
-          <p className="text-sm font-medium text-muted-foreground animate-pulse">
-            Loading your study dashboard...
-          </p>
+      <div className="space-y-8 animate-in fade-in duration-500">
+        {/* Welcome Section Skeleton */}
+        <div className="grid gap-6 md:grid-cols-3 items-center">
+          <div className="md:col-span-2 space-y-4">
+            <div className="h-10 w-3/4 animate-pulse rounded-md bg-muted/60 border border-border/30" />
+            <div className="h-4 w-full max-w-2xl animate-pulse rounded-md bg-muted/60 border border-border/30" />
+            <div className="h-4 w-5/6 max-w-2xl animate-pulse rounded-md bg-muted/60 border border-border/30" />
+          </div>
+          <div className="h-28 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-24 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
+          ))}
+        </div>
+
+        {/* Dashboard Grid Skeleton */}
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="md:col-span-2 h-[400px] rounded-xl animate-pulse bg-muted/60 border border-border/30" />
+          <div className="h-[400px] rounded-xl animate-pulse bg-muted/60 border border-border/30" />
         </div>
       </div>
     );
@@ -201,6 +217,16 @@ export default function DashboardPage() {
       animate="visible"
       className="space-y-8"
     >
+      {/* Back to Home Navigation */}
+      <motion.div variants={itemVariants} className="flex justify-start">
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-foreground pl-0 -ml-2 mb-2">
+            <Home className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </Link>
+      </motion.div>
+
       {/* Welcome Section & Backend Profile */}
       <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-3 items-center">
         <div className="md:col-span-2 flex flex-col justify-center space-y-2">
@@ -299,20 +325,20 @@ export default function DashboardPage() {
                   <Activity className="h-5 w-5 text-primary" />
                   Study Plans Progress
                 </CardTitle>
-                <CardDescription>Visual overview of task completion percentage per plan</CardDescription>
+                <CardDescription className="text-slate-700 dark:text-slate-300 font-medium">Visual overview of task completion percentage per plan</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 11 }} />
-                    <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 11 }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#CBD5E1" />
+                    <XAxis dataKey="name" axisLine={{ stroke: '#94A3B8' }} tickLine={{ stroke: '#94A3B8' }} tick={{ fill: "#334155", fontSize: 12, fontWeight: 500 }} />
+                    <YAxis domain={[0, 100]} axisLine={{ stroke: '#94A3B8' }} tickLine={{ stroke: '#94A3B8' }} tick={{ fill: "#334155", fontSize: 12, fontWeight: 500 }} />
                     <Tooltip
-                      cursor={{ fill: "rgba(14, 165, 233, 0.05)" }}
+                      cursor={{ fill: "rgba(2, 132, 199, 0.05)" }}
                       contentStyle={{ backgroundColor: "#0F172A", border: "none", borderRadius: "8px", color: "#F8FAFC" }}
-                      itemStyle={{ color: "#0EA5E9" }}
+                      itemStyle={{ color: "#0284C7" }}
                     />
-                    <Bar dataKey="progress" fill="#0EA5E9" radius={[4, 4, 0, 0]} name="Progress (%)" />
+                    <Bar dataKey="progress" fill="#0284C7" radius={[4, 4, 0, 0]} name="Progress (%)" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

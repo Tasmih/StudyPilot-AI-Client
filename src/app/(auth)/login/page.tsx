@@ -92,7 +92,7 @@ export default function LoginPage() {
     <Card className="border-0 shadow-2xl ring-1 ring-border/50">
       <CardHeader className="space-y-2 text-center">
         <CardTitle className="text-3xl font-bold tracking-tight">Welcome back</CardTitle>
-        <CardDescription className="text-base">
+        <CardDescription className="text-base text-slate-600 dark:text-slate-400">
           Enter your credentials to access your AI study dashboard.
         </CardDescription>
       </CardHeader>
@@ -100,11 +100,11 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="email"
                 placeholder="name@example.com"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading || isGoogleLoading}
                 {...register("email")}
               />
@@ -116,11 +116,11 @@ export default function LoginPage() {
 
           <div className="space-y-2">
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-500" />
               <Input
                 type="password"
                 placeholder="••••••••"
-                className="pl-9"
+                className="pl-9 placeholder:text-slate-500 border-slate-300 dark:border-slate-600"
                 disabled={isLoading || isGoogleLoading}
                 {...register("password")}
               />
@@ -145,7 +145,7 @@ export default function LoginPage() {
             <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-card px-2 text-slate-600 dark:text-slate-400 font-medium">Or continue with</span>
           </div>
         </div>
 

@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-8">
-      <div className="absolute top-8 flex items-center justify-center w-full">
+      <div className="mb-8 flex items-center justify-center w-full">
         <Link href="/" className="flex items-center space-x-2">
           <BrainCircuit className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold tracking-tight text-foreground">StudyPilot AI</span>
