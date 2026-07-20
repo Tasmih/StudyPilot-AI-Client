@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { PlannerForm } from "@/features/study-planner/PlannerForm";
 import { PlannerRoadmap } from "@/features/study-planner/PlannerRoadmap";
 import { PlannerFormData, PlannerResponse } from "@/schemas/planner";
-import { toast } from "react-toastify";
+import { showSuccess, showError, confirmDelete } from "@/utils/notifications";
 import { apiClient } from "@/lib/api-client";
 import { Loading } from "@/components/ui/loading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,10 +84,10 @@ export default function PlannerPage() {
         setPreviewPlan(genRes.data);
         setOriginalFormData(formData);
         setIsFormVisible(false);
-        toast.success("AI Study Plan preview generated!");
+        showSuccess("AI Study Plan preview generated!");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to generate AI study plan.");
+      showError(err.message || "Failed to generate AI study plan.");
     } finally {
       setIsGenerating(false);
     }
@@ -104,10 +104,10 @@ export default function PlannerPage() {
 
       if (genRes.success) {
         setPreviewPlan(genRes.data);
-        toast.success("New AI Study Plan regenerated!");
+        showSuccess("New AI Study Plan regenerated!");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to regenerate study plan.");
+      showError(err.message || "Failed to regenerate study plan.");
     } finally {
       setIsGenerating(false);
     }
@@ -156,10 +156,10 @@ export default function PlannerPage() {
         setSelectedPlan(res.data);
         setPreviewPlan(null);
         setOriginalFormData(null);
-        toast.success("Study plan saved successfully!");
+        showSuccess("Study plan saved successfully!");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to save study plan.");
+      showError(err.message || "Failed to save study plan.");
     } finally {
       setIsSaving(false);
     }
@@ -181,16 +181,20 @@ export default function PlannerPage() {
       await apiClient.patch(`/api/study-plans/${selectedPlan._id}`, {
         tasks: updatedTasks,
       });
-      toast.success("Task status updated!");
+      showSuccess("Task status updated!");
     } catch (err: any) {
       console.error("Failed to update task:", err);
-      toast.error("Failed to sync task status with backend.");
+      showError("Failed to sync task status with backend.");
       fetchPlans();
     }
   };
 
   const handleDeletePlan = async (planId: string) => {
-    if (!confirm("Are you sure you want to delete this study plan?")) return;
+    const isConfirmed = await confirmDelete(
+      "Delete Study Plan?",
+      "Are you sure you want to delete this study plan? This action cannot be undone."
+    );
+    if (!isConfirmed) return;
 
     try {
       await apiClient.delete(`/api/study-plans/${planId}`);
@@ -198,22 +202,59 @@ export default function PlannerPage() {
       if (selectedPlan?._id === planId) {
         setSelectedPlan(null);
       }
-      toast.success("Study plan deleted.");
+      showSuccess("Study plan deleted.");
     } catch (err: any) {
       console.error("Failed to delete study plan:", err);
-      toast.error("Failed to delete study plan.");
+      showError("Failed to delete study plan.");
     }
   };
 
   const getReconstructedPlanResponse = (plan: BackendStudyPlan): PlannerResponse | null => {
+    if (!plan.description) {
+      return {
+        roadmap: [
+          {
+            phaseName: "General Study Phase",
+            tasks: (plan.tasks || []).map((t) => ({
+              id: t.id,
+              title: t.title,
+              completed: t.completed,
+              description: "",
+              estimatedHours: 1,
+            })),
+          },
+        ],
+        dailySchedule: plan.topics || [],
+        revisionStrategy: "No strategy details provided.",
+      };
+    }
+
     try {
       const details = JSON.parse(plan.description);
-      const reconstructedRoadmap = details.roadmap.map((phase: any) => ({
-        phaseName: phase.phaseName,
-        tasks: phase.tasks.map((t: any) => {
+      if (!details || typeof details !== "object") {
+        throw new Error("Parsed description is not an object");
+      }
+
+      const reconstructedRoadmap = (details.roadmap || [
+        {
+          phaseName: "General Study Phase",
+          tasks: (plan.tasks || []).map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            completed: t.completed || false,
+            description: t.description || "",
+            estimatedHours: t.estimatedHours || 1,
+          })),
+        }
+      ]).map((phase: any) => ({
+        phaseName: phase.phaseName || "Study Phase",
+        tasks: (phase.tasks || []).map((t: any) => {
           const backendTask = plan.tasks?.find((bt) => bt.id === t.id);
           return {
-            ...t,
+            id: t.id,
+            title: t.title || "Study Task",
+            description: t.description || "",
+            estimatedHours: t.estimatedHours || 1,
             completed: backendTask ? backendTask.completed : false,
           };
         }),
@@ -221,12 +262,31 @@ export default function PlannerPage() {
 
       return {
         roadmap: reconstructedRoadmap,
-        dailySchedule: details.dailySchedule || [],
-        revisionStrategy: details.revisionStrategy || "",
+        dailySchedule: details.dailySchedule || plan.topics || [],
+        revisionStrategy: details.revisionStrategy || "Review your study plan tasks regularly.",
       };
     } catch (err) {
-      console.error("Reconstruction error:", err);
-      return null;
+      if (process.env.NODE_ENV === "development") {
+        console.warn("[Planner] plan.description is not valid JSON, returning fallback configuration:", err);
+      }
+      
+      // Plain text or malformed JSON fallback
+      return {
+        roadmap: [
+          {
+            phaseName: "General Study Phase",
+            tasks: (plan.tasks || []).map((t) => ({
+              id: t.id,
+              title: t.title,
+              completed: t.completed,
+              description: "",
+              estimatedHours: 1,
+            })),
+          },
+        ],
+        dailySchedule: plan.topics || [],
+        revisionStrategy: plan.description,
+      };
     }
   };
 
