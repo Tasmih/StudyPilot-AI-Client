@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  // Try to grab the better-auth session cookie.
-  const sessionCookie = request.cookies.get("better-auth.session_token");
+  // Try to grab the better-auth session cookie (check both secure and unsecure names).
+  const sessionCookie = request.cookies.get("better-auth.session_token") || request.cookies.get("__Secure-better-auth.session_token");
 
   // Define paths that strictly require authentication
   const isProtectedRoute = 
