@@ -48,16 +48,16 @@ export const confirmDelete = async (title: string, text: string) => {
     showCancelButton: true,
     buttonsStyling: false,
     customClass: {
-      popup: "rounded-[24px] border border-border/80 shadow-2xl font-sans bg-card text-foreground p-6 max-w-sm",
-      title: "font-extrabold text-foreground text-xl pt-2 block",
-      htmlContainer: "text-muted-foreground text-sm pt-2 leading-relaxed block",
+      popup: "!rounded-[24px] !border !border-slate-800 !shadow-2xl !font-sans !p-6 max-w-sm",
+      title: "!text-white !font-extrabold !text-xl !pt-2 !block",
+      htmlContainer: "!text-slate-300 !text-sm !pt-2 !leading-relaxed !block",
       actions: "flex justify-end gap-3 pt-4 w-full",
-      confirmButton: "bg-destructive text-white font-bold px-4 py-2.5 rounded-xl hover:bg-destructive/90 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-destructive text-sm min-w-[100px]",
-      cancelButton: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-bold px-4 py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm min-w-[100px]",
+      confirmButton: "!bg-rose-600 hover:!bg-rose-700 !text-white !font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-destructive text-sm min-w-[100px]",
+      cancelButton: "!bg-slate-700 hover:!bg-slate-600 !text-slate-100 !font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm min-w-[100px]",
     },
     confirmButtonText: "Delete",
     cancelButtonText: "Cancel",
-    background: "var(--card)",
+    background: "#0f172a",
   });
   
   return result.isConfirmed;
@@ -71,13 +71,13 @@ export const showAlert = async (title: string, text: string, icon: "success" | "
     icon,
     buttonsStyling: false,
     customClass: {
-      popup: "rounded-[24px] border border-border/80 shadow-2xl font-sans bg-card text-foreground p-6 max-w-sm",
-      title: "font-extrabold text-foreground text-xl pt-2 block",
-      htmlContainer: "text-muted-foreground text-sm pt-2 leading-relaxed block",
+      popup: "!rounded-[24px] !border !border-slate-800 !shadow-2xl !font-sans !p-6 max-w-sm",
+      title: "!text-white !font-extrabold !text-xl !pt-2 !block",
+      htmlContainer: "!text-slate-300 !text-sm !pt-2 !leading-relaxed !block",
       actions: "flex justify-center pt-4 w-full",
-      confirmButton: "bg-primary text-primary-foreground font-bold px-6 py-2.5 rounded-xl hover:opacity-95 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-sm min-w-[120px]",
+      confirmButton: "!bg-indigo-600 hover:!bg-indigo-700 !text-white !font-bold px-6 py-2.5 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-sm min-w-[120px]",
     },
-    background: "var(--card)",
+    background: "#0f172a",
   });
 };
 
@@ -90,16 +90,16 @@ export const confirmEditPrompt = async (title: string, text: string) => {
     showCancelButton: true,
     buttonsStyling: false,
     customClass: {
-      popup: "rounded-[24px] border border-border/80 shadow-2xl font-sans bg-card text-foreground p-6 max-w-sm",
-      title: "font-extrabold text-foreground text-xl pt-2 block",
-      htmlContainer: "text-muted-foreground text-sm pt-2 leading-relaxed block",
+      popup: "!rounded-[24px] !border !border-slate-800 !shadow-2xl !font-sans !p-6 max-w-sm",
+      title: "!text-white !font-extrabold !text-xl !pt-2 !block",
+      htmlContainer: "!text-slate-300 !text-sm !pt-2 !leading-relaxed !block",
       actions: "flex justify-end gap-3 pt-4 w-full",
-      confirmButton: "bg-primary text-white font-bold px-4 py-2.5 rounded-xl hover:bg-primary/90 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-sm min-w-[100px]",
-      cancelButton: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 font-bold px-4 py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm min-w-[100px]",
+      confirmButton: "!bg-indigo-600 hover:!bg-indigo-700 !text-white !font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary text-sm min-w-[100px]",
+      cancelButton: "!bg-slate-700 hover:!bg-slate-600 !text-slate-100 !font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm min-w-[100px]",
     },
     confirmButtonText: "Yes, Edit",
     cancelButtonText: "Cancel",
-    background: "var(--card)",
+    background: "#0f172a",
   });
   
   return result.isConfirmed;
