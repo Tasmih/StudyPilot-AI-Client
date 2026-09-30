@@ -142,13 +142,13 @@ export default function DashboardPage() {
             <div className="h-4 w-full max-w-2xl animate-pulse rounded-md bg-muted/60 border border-border/30" />
             <div className="h-4 w-5/6 max-w-2xl animate-pulse rounded-md bg-muted/60 border border-border/30" />
           </div>
-          <div className="h-28 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
+          <div className="h-28 sm:h-32 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
         </div>
 
         {/* Stats Cards Skeleton */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-24 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
+            <div key={i} className="h-28 w-full rounded-xl animate-pulse bg-muted/60 border border-border/30" />
           ))}
         </div>
 
@@ -239,16 +239,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Backend User Profile Card */}
-        <Card className="bg-card/50 backdrop-blur-md border-border/80 relative overflow-hidden">
-          <CardContent className="p-4 flex flex-col justify-between h-full space-y-3">
-            <div className="flex items-center justify-between">
+        <Card className="bg-card/50 backdrop-blur-md border border-border/80 relative overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 rounded-xl">
+          <CardContent className="!p-5 sm:!p-6 flex flex-col justify-center min-h-[110px] space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Verified API Profile
               </span>
               {profileError ? (
-                <span className="inline-flex h-2 w-2 rounded-full bg-destructive animate-pulse" title="Backend connection failed" />
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-destructive animate-pulse shrink-0" title="Backend connection failed" />
               ) : (
-                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Backend connection active" />
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Backend connection active" />
               )}
             </div>
 
@@ -259,7 +259,7 @@ export default function DashboardPage() {
               </div>
             ) : profile ? (
               <div className="space-y-1">
-                <div className="text-sm font-bold text-foreground truncate">{profile.name}</div>
+                <div className="text-sm md:text-base font-bold text-foreground truncate">{profile.name}</div>
                 <div className="text-xs text-muted-foreground font-mono truncate">{profile.email}</div>
               </div>
             ) : null}
@@ -272,14 +272,14 @@ export default function DashboardPage() {
         {statsCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <Card key={idx} className="border-0 shadow-md ring-1 ring-border/50">
-              <CardContent className="flex items-center p-6">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${card.color}`}>
-                  <Icon className="h-6 w-6" />
+            <Card key={idx} className="bg-card border border-border/60 shadow-sm hover:shadow-md ring-0 hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden">
+              <CardContent className="!p-5 sm:!p-6 flex items-center gap-4">
+                <div className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl ${card.color}`}>
+                  <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </div>
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none text-muted-foreground">{card.title}</p>
-                  <p className="text-2xl font-bold text-foreground">{card.value}</p>
+                <div className="min-w-0 flex-1 space-y-1.5 flex flex-col justify-center">
+                  <p className="text-xs sm:text-sm font-medium leading-normal text-muted-foreground truncate">{card.title}</p>
+                  <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-none">{card.value}</p>
                 </div>
               </CardContent>
             </Card>
