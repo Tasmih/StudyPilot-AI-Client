@@ -75,6 +75,8 @@ export default function ExploreDetailsPage({ params }: PageProps) {
       console.error("Explore template fetch error:", err);
       if (err.status === 404) {
         setIs404(true);
+      } else if (err.status === 429 || err?.isRateLimit || err?.message?.includes("429")) {
+        setError("The server is temporarily busy (Rate Limited). Please wait a few seconds and try again.");
       } else {
         setError(err.message || "Failed to load the study template details.");
       }
@@ -101,7 +103,11 @@ export default function ExploreDetailsPage({ params }: PageProps) {
       }
     } catch (err: any) {
       console.error("Related templates fetch error:", err);
-      setRelatedError(err.message || "Failed to load related study programs.");
+      if (err.status === 429 || err?.isRateLimit || err?.message?.includes("429")) {
+        setRelatedError("Temporarily unable to load related study programs due to high traffic.");
+      } else {
+        setRelatedError(err.message || "Failed to load related study programs.");
+      }
     } finally {
       setIsLoadingRelated(false);
     }

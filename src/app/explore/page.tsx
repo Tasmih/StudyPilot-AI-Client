@@ -55,6 +55,17 @@ const SORT_OPTIONS = [
   { value: "most-tasks", label: "Most Tasks" },
 ];
 
+const isRateLimitError = (err: any): boolean => {
+  if (!err) return false;
+  return (
+    err.isRateLimit === true ||
+    err.status === 429 ||
+    String(err.message || "").includes("429") ||
+    String(err.message || "").toLowerCase().includes("rate limit") ||
+    String(err.message || "").toLowerCase().includes("too many requests")
+  );
+};
+
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Debounced tracker
@@ -62,18 +73,20 @@ export default function ExplorePage() {
   const [difficulty, setDifficulty] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  // Debounce search term change
+  // Debounce search term change (400ms) to prevent excessive requests while typing
   useEffect(() => {
+    if (searchTerm === search) return;
     const delayDebounceFn = setTimeout(() => {
       setSearch(searchTerm);
       setPage(1); // Reset page on query search
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, search]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["templates", search, category, difficulty, sort, page],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
@@ -97,11 +110,27 @@ export default function ExplorePage() {
       return res;
     },
     placeholderData: (previousData) => previousData,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent redundant refetches
+    gcTime: 10 * 60 * 1000, // Keep in garbage collection cache for 10 minutes
+    refetchOnWindowFocus: false, // Prevent aggressive refetching when window gains focus
+    refetchOnReconnect: false, // Prevent spamming requests on reconnect
+    retry: (failureCount) => {
+      // Allow up to 2 retries with exponential backoff
+      if (failureCount >= 2) return false;
+      return true;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
   });
 
   const templates = data?.data || [];
   const totalPages = data?.pagination?.totalPages || 1;
   const total = data?.pagination?.total || 0;
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setSearch("");
+    setPage(1);
+  };
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -110,6 +139,15 @@ export default function ExplorePage() {
     setDifficulty("");
     setSort("newest");
     setPage(1);
+  };
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    try {
+      await refetch();
+    } finally {
+      setTimeout(() => setIsRetrying(false), 1200);
+    }
   };
 
   const handlePageChange = (newPage: number) => {
@@ -179,7 +217,8 @@ export default function ExplorePage() {
               />
               {searchTerm && (
                 <button
-                  onClick={() => setSearchTerm("")}
+                  onClick={handleClearSearch}
+                  aria-label="Clear search query"
                   className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
@@ -297,17 +336,42 @@ export default function ExplorePage() {
             ))}
           </div>
         ) : error ? (
-          /* Error display */
+          /* Error display with specific Rate Limit (HTTP 429) visual feedback */
           <div className="max-w-md mx-auto py-12">
-            <Card className="border-destructive/30 text-center shadow-md">
+            <Card
+              className={cn(
+                "text-center shadow-md",
+                isRateLimitError(error)
+                  ? "border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10"
+                  : "border-destructive/30"
+              )}
+            >
               <CardContent className="pt-8 pb-8 space-y-4">
-                <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold text-foreground">Catalog Error</h3>
-                  <p className="text-sm text-muted-foreground">{error?.message}</p>
+                {isRateLimitError(error) ? (
+                  <Clock className="h-12 w-12 text-amber-500 mx-auto animate-pulse" />
+                ) : (
+                  <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
+                )}
+                <div className="space-y-1.5">
+                  <h3 className="text-lg font-bold text-foreground">
+                    {isRateLimitError(error) ? "Server Busy (Rate Limited)" : "Catalog Error"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                    {isRateLimitError(error)
+                      ? "The catalog received too many requests in a short time. Please wait a few seconds before trying again."
+                      : error?.message || "Failed to load academic catalog templates."}
+                  </p>
                 </div>
-                <Button onClick={() => refetch()} variant="outline" className="mt-2">
-                  Retry Loading
+                <Button
+                  onClick={handleRetry}
+                  disabled={isRetrying || isFetching}
+                  variant="outline"
+                  className="mt-2 inline-flex items-center gap-2"
+                >
+                  <RefreshCw
+                    className={cn("h-4 w-4", (isRetrying || isFetching) && "animate-spin")}
+                  />
+                  {isRetrying || isFetching ? "Retrying..." : "Retry Loading"}
                 </Button>
               </CardContent>
             </Card>
