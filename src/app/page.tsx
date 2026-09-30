@@ -113,7 +113,10 @@ export default function HomePage() {
 
             <div className="grid gap-8 md:grid-cols-4">
               {steps.map((step, idx) => (
-                <div key={idx} className="relative p-6 bg-card border border-border/60 rounded-2xl space-y-3 shadow-sm">
+                <div
+                  key={idx}
+                  className="relative p-6 bg-card border border-border/60 rounded-2xl space-y-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 hover:border-primary/30"
+                >
                   <div className="text-4xl font-extrabold text-primary/20">{step.num}</div>
                   <h3 className="text-lg font-bold text-foreground">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
@@ -229,7 +232,10 @@ export default function HomePage() {
               {coreModules.map((module, idx) => {
                 const Icon = module.icon;
                 return (
-                  <div key={idx} className="p-6 bg-card border border-border/85 rounded-2xl flex flex-col gap-4 shadow-sm animate-out">
+                  <div
+                    key={idx}
+                    className="p-6 bg-card border border-border/85 rounded-2xl flex flex-col gap-4 shadow-sm animate-out transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 hover:border-primary/30 cursor-default"
+                  >
                     <div className="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
                       <Icon className="h-5 w-5" />
                     </div>

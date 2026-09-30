@@ -15,12 +15,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     // Variant styles
     const variants = {
-      primary: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
-      secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm",
-      accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm",
-      outline: "border border-input hover:bg-muted hover:text-foreground",
-      ghost: "hover:bg-muted hover:text-foreground",
-      destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+      primary: "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95 shadow-sm",
+      secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 active:bg-secondary/95 shadow-sm",
+      accent: "bg-accent text-accent-foreground hover:bg-accent/90 active:bg-accent/95 shadow-sm",
+      outline: "border border-input bg-transparent hover:bg-slate-100 active:bg-slate-200/80 hover:text-foreground dark:hover:bg-neutral-800 dark:active:bg-neutral-700",
+      ghost: "hover:bg-slate-100 active:bg-slate-200/80 hover:text-foreground dark:hover:bg-neutral-800 dark:active:bg-neutral-700",
+      destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/95 shadow-sm",
     };
 
     // Size styles

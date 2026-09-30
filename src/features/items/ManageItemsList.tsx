@@ -117,7 +117,7 @@ export function ManageItemsList() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="h-full border-0 shadow-md ring-1 ring-border/50 flex flex-col group hover:shadow-lg transition-shadow">
+                <Card className="h-full border-0 shadow-md ring-1 ring-border/50 flex flex-col group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/40">
                   {item.imageUrl && (
                     <div className="h-32 w-full overflow-hidden rounded-t-xl bg-muted">
                       <img 

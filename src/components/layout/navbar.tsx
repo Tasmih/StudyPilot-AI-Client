@@ -125,8 +125,8 @@ export function Navbar() {
                     key={route.href}
                     href={route.href}
                     className={cn(
-                      "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800",
-                      isActive ? "text-primary bg-primary/5 font-semibold" : "text-muted-foreground"
+                      "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2.5 rounded-lg hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:active:bg-neutral-700",
+                      isActive ? "text-primary bg-primary/10 font-semibold" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <Icon className="mr-1.5 h-4 w-4" />
@@ -143,8 +143,8 @@ export function Navbar() {
                   aria-haspopup="true"
                   aria-label="Toggle secondary navigation items"
                   className={cn(
-                    "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary",
-                    isMoreOpen && "text-primary bg-primary/5"
+                    "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2.5 rounded-lg hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:active:bg-neutral-700 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary",
+                    isMoreOpen && "text-primary bg-primary/10 font-semibold"
                   )}
                 >
                   <span>More</span>
@@ -168,8 +168,8 @@ export function Navbar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                              "flex items-center w-full text-left rounded-lg px-3 py-2 text-xs transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium",
-                              isSubActive ? "text-primary bg-primary/5 font-bold" : "text-muted-foreground"
+                              "flex items-center w-full text-left rounded-lg px-3 py-2 text-xs transition-colors hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:active:bg-neutral-700 font-medium",
+                              isSubActive ? "text-primary bg-primary/10 font-bold" : "text-muted-foreground hover:text-foreground"
                             )}
                           >
                             <SubIcon className="mr-2 h-4 w-4 shrink-0" />
@@ -192,8 +192,8 @@ export function Navbar() {
                   key={route.href}
                   href={route.href}
                   className={cn(
-                    "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800",
-                    isActive ? "text-primary bg-primary/5 font-semibold" : "text-muted-foreground"
+                    "flex items-center text-sm font-medium transition-colors hover:text-primary py-1.5 px-2.5 rounded-lg hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:active:bg-neutral-700",
+                    isActive ? "text-primary bg-primary/10 font-semibold" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   <Icon className="mr-1.5 h-4 w-4" />
@@ -216,8 +216,8 @@ export function Navbar() {
                 aria-expanded={isUserOpen}
                 aria-haspopup="true"
                 className={cn(
-                  "flex items-center gap-2 text-sm font-semibold select-none cursor-pointer py-1.5 px-2.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 border transition-all focus:outline-none focus:ring-1 focus:ring-primary",
-                  isUserOpen ? "border-primary/40 bg-primary/5" : "border-border"
+                  "flex items-center gap-2 text-sm font-semibold select-none cursor-pointer py-1.5 px-3 rounded-full hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:active:bg-neutral-700 border transition-all focus:outline-none focus:ring-1 focus:ring-primary",
+                  isUserOpen ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-foreground hover:border-slate-300"
                 )}
               >
                 <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -243,22 +243,22 @@ export function Navbar() {
                       <p className="text-xs font-semibold text-foreground truncate">{session.user.email}</p>
                     </div>
 
-                    <Link href="/profile" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground font-medium">
+                    <Link href="/profile" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground font-medium transition-colors">
                       <User className="mr-2 h-4 w-4 text-muted-foreground" />
                       My Profile
                     </Link>
                     
-                    <Link href="/dashboard" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground font-medium">
+                    <Link href="/dashboard" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground font-medium transition-colors">
                       <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
                       Dashboard Plans
                     </Link>
 
-                    <Link href="/about" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground font-medium">
+                    <Link href="/about" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground font-medium transition-colors">
                       <Info className="mr-2 h-4 w-4 text-muted-foreground" />
                       About StudyPilot
                     </Link>
 
-                    <Link href="/contact" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground font-medium">
+                    <Link href="/contact" className="flex items-center rounded-lg px-3 py-2 text-xs hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground font-medium transition-colors">
                       <Mail className="mr-2 h-4 w-4 text-muted-foreground" />
                       Support Center
                     </Link>
@@ -279,10 +279,17 @@ export function Navbar() {
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-foreground hover:text-primary hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 dark:hover:text-foreground transition-colors font-medium"
+                >
+                  Sign In
+                </Button>
               </Link>
               <Link href="/register">
-                <Button>Get Started</Button>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95 shadow-sm transition-all font-medium">
+                  Get Started
+                </Button>
               </Link>
             </>
           )}
@@ -290,7 +297,7 @@ export function Navbar() {
 
         {/* Mobile Menu Toggle button */}
         <button
-          className="lg:hidden flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-850 hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+          className="lg:hidden flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800 hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer transition-colors"
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-label="Toggle navigation drawer"
@@ -322,8 +329,8 @@ export function Navbar() {
                         className={cn(
                           "flex items-center rounded-lg px-3.5 py-2.5 text-sm font-semibold transition-colors",
                           isActive 
-                            ? "bg-primary/10 text-primary" 
-                            : "text-foreground hover:bg-muted"
+                            ? "bg-primary/10 text-primary font-bold" 
+                            : "text-foreground hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800"
                         )}
                       >
                         <Icon className="mr-3 h-5 w-5 shrink-0" />
@@ -357,8 +364,8 @@ export function Navbar() {
                         className={cn(
                           "flex items-center rounded-lg px-3.5 py-2.5 text-sm font-semibold transition-colors",
                           isActive 
-                            ? "bg-primary/10 text-primary" 
-                            : "text-foreground hover:bg-muted"
+                            ? "bg-primary/10 text-primary font-bold" 
+                            : "text-foreground hover:bg-slate-100 active:bg-slate-200/80 dark:hover:bg-neutral-800"
                         )}
                       >
                         <Icon className="mr-3 h-5 w-5 shrink-0" />
@@ -369,10 +376,10 @@ export function Navbar() {
                   
                   <div className="flex flex-col gap-2.5 mt-4 pt-4 border-t border-border/40 px-1">
                     <Link href="/login" className="w-full">
-                      <Button variant="outline" className="w-full justify-center py-5">Sign In</Button>
+                      <Button variant="outline" className="w-full justify-center py-5 border-border text-foreground hover:bg-slate-100 hover:text-primary active:bg-slate-200/80 transition-colors font-medium">Sign In</Button>
                     </Link>
                     <Link href="/register" className="w-full">
-                      <Button className="w-full justify-center py-5">Get Started</Button>
+                      <Button className="w-full justify-center py-5 bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95 font-medium shadow-sm transition-all">Get Started</Button>
                     </Link>
                   </div>
                 </>
