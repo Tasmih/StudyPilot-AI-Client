@@ -55,22 +55,26 @@ export default function HomePage() {
     {
       icon: Calendar,
       title: "AI Study Planner",
-      description: "Build customized learning roadmaps, suggested routines, and structured revision strategies tailored to your timeline."
+      description: "Build customized learning roadmaps, suggested routines, and structured revision strategies tailored to your timeline.",
+      href: "/planner"
     },
     {
       icon: MessageSquare,
       title: "AI Tutor Chat",
-      description: "Receive 24/7 contextual feedback, study support, and visual code/problem breakdowns from your dedicated tutor."
+      description: "Receive 24/7 contextual feedback, study support, and visual code/problem breakdowns from your dedicated tutor.",
+      href: "/assistant"
     },
     {
       icon: Sparkles,
       title: "Personalized Recommendations",
-      description: "Discover tailored courses and resource decks aligned dynamically with your task completion velocity."
+      description: "Discover tailored courses and resource decks aligned dynamically with your task completion velocity.",
+      href: "/recommendations"
     },
     {
       icon: LineChart,
       title: "Progress Analytics",
-      description: "Track your task completion percentages, active study plan numbers, and performance insights in one console."
+      description: "Track your task completion percentages, active study plan numbers, and performance insights in one console.",
+      href: "/dashboard"
     }
   ];
 
@@ -232,16 +236,22 @@ export default function HomePage() {
               {coreModules.map((module, idx) => {
                 const Icon = module.icon;
                 return (
-                  <div
+                  <Link
                     key={idx}
-                    className="p-6 bg-card border border-border/85 rounded-2xl flex flex-col gap-4 shadow-sm animate-out transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 hover:border-primary/30 cursor-default"
+                    href={module.href}
+                    className="p-6 bg-card border border-border/85 rounded-2xl flex flex-col gap-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/40 hover:border-primary/40 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    <div className="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                    <div className="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="text-lg font-bold text-foreground">{module.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{module.description}</p>
-                  </div>
+                    <div className="space-y-1.5 flex-1 flex flex-col justify-between">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{module.title}</h3>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary transition-all" />
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{module.description}</p>
+                    </div>
+                  </Link>
                 );
               })}
             </div>

@@ -116,6 +116,35 @@
     @apply bg-background text-foreground antialiased;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
+
+  /* Interactive Cursor Standards: Ensure all clickable controls show pointer cursor across entire surface */
+  a,
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  summary,
+  select {
+    cursor: pointer;
+  }
+
+  /* Disabled state cursor rules */
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [aria-disabled="true"],
+  .disabled {
+    cursor: not-allowed !important;
+  }
+
+  /* Ensure text/icons inside buttons and interactive links inherit pointer cursor */
+  a *,
+  button *,
+  [role="button"] * {
+    cursor: inherit;
+  }
 }
 
 /* Custom SweetAlert2 Theme Overrides for StudyPilot AI */

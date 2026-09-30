@@ -88,8 +88,9 @@ export function HeroSection() {
             {slides.map((_, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => setCurrentSlide(idx)}
-                className={`h-2 rounded-full transition-all duration-300 ${
+                className={`h-2 rounded-full cursor-pointer transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   currentSlide === idx ? "w-8 bg-primary" : "w-2 bg-muted hover:bg-muted-foreground/50"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
