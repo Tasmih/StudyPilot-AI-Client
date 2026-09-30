@@ -42,6 +42,9 @@ export interface RequestOptions extends Omit<RequestInit, "body"> {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// In-flight GET request deduplication cache to coalesce identical concurrent requests
+const inFlightRequests = new Map<string, Promise<any>>();
+
 /**
  * Generic request helper wrapping the native fetch API.
  * Configured with credentials: "include" to pass Better Auth cookies to the backend.
@@ -242,8 +245,24 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const apiClient = {
-  get: <T>(path: string, options?: Omit<RequestOptions, "method" | "data">) =>
-    request<T>(path, { ...options, method: "GET" }),
+  get: <T>(path: string, options?: Omit<RequestOptions, "method" | "data">): Promise<T> => {
+    // Only deduplicate GET requests that don't pass custom abort signals
+    // (If a signal is passed, create a scoped execution or join active in-flight request)
+    const cacheKey = `GET:${path}`;
+    if (!options?.signal && inFlightRequests.has(cacheKey)) {
+      return inFlightRequests.get(cacheKey)! as Promise<T>;
+    }
+
+    const promise = request<T>(path, { ...options, method: "GET" }).finally(() => {
+      inFlightRequests.delete(cacheKey);
+    });
+
+    if (!options?.signal) {
+      inFlightRequests.set(cacheKey, promise);
+    }
+
+    return promise;
+  },
 
   post: <T>(path: string, data?: any, options?: Omit<RequestOptions, "method" | "data">) =>
     request<T>(path, { ...options, method: "POST", data }),

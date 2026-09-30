@@ -58,11 +58,10 @@ const SORT_OPTIONS = [
 const isRateLimitError = (err: any): boolean => {
   if (!err) return false;
   return (
-    err.isRateLimit === true ||
     err.status === 429 ||
-    String(err.message || "").includes("429") ||
-    String(err.message || "").toLowerCase().includes("rate limit") ||
-    String(err.message || "").toLowerCase().includes("too many requests")
+    err.isRateLimit === true ||
+    String(err.message || "").toLowerCase().includes("too many requests") ||
+    String(err.message || "").toLowerCase().includes("rate limit")
   );
 };
 
@@ -80,12 +79,12 @@ const isTimeoutError = (err: any): boolean => {
 
 const isServerBusyError = (err: any): boolean => {
   if (!err) return false;
+  // Exclude genuine 429 rate limits so they get distinct handling and Retry-After countdowns
+  if (isRateLimitError(err)) return false;
   return (
     err.isServerBusy === true ||
     err.status === 502 ||
     err.status === 503 ||
-    isRateLimitError(err) ||
-    String(err.message || "").toLowerCase().includes("busy") ||
     String(err.message || "").toLowerCase().includes("service unavailable") ||
     String(err.message || "").toLowerCase().includes("bad gateway")
   );
@@ -99,6 +98,19 @@ export default function ExplorePage() {
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState<number | null>(null);
+
+  // Cooldown countdown timer effect when rate limited
+  useEffect(() => {
+    if (cooldownRemaining === null || cooldownRemaining <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownRemaining((prev) => {
+        if (prev === null || prev <= 1) return null;
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownRemaining]);
 
   // Debounce search term change (400ms) to prevent excessive requests while typing
   useEffect(() => {
@@ -176,9 +188,24 @@ export default function ExplorePage() {
   };
 
   const handleRetry = async () => {
+    if (cooldownRemaining !== null && cooldownRemaining > 0) return;
     setIsRetrying(true);
     try {
-      await refetch({ cancelRefetch: true });
+      const result = await refetch({ cancelRefetch: true });
+      if (result.error) {
+        const err = result.error as any;
+        if (isRateLimitError(err)) {
+          const waitTime = err?.retryAfter && err.retryAfter > 0 ? err.retryAfter : 10;
+          setCooldownRemaining(waitTime);
+        }
+      } else {
+        setCooldownRemaining(null);
+      }
+    } catch (err: any) {
+      if (isRateLimitError(err)) {
+        const waitTime = err?.retryAfter && err.retryAfter > 0 ? err.retryAfter : 10;
+        setCooldownRemaining(waitTime);
+      }
     } finally {
       setTimeout(() => setIsRetrying(false), 800);
     }
@@ -371,21 +398,25 @@ export default function ExplorePage() {
             ))}
           </div>
         ) : error ? (
-          /* Error display with specific Server Busy / Timeout / Network visual feedback */
+          /* Error display with specific Rate Limit (429) / Server Busy (503) / Timeout (504) visual feedback */
           <div className="max-w-md mx-auto py-12">
             <Card
               className={cn(
                 "text-center shadow-md",
-                isServerBusyError(error)
+                isRateLimitError(error)
                   ? "border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10"
+                  : isServerBusyError(error)
+                  ? "border-orange-500/40 bg-orange-500/5 dark:bg-orange-500/10"
                   : isTimeoutError(error)
                   ? "border-blue-500/40 bg-blue-500/5 dark:bg-blue-500/10"
                   : "border-destructive/30 bg-destructive/5"
               )}
             >
               <CardContent className="pt-8 pb-8 space-y-4">
-                {isServerBusyError(error) ? (
+                {isRateLimitError(error) ? (
                   <Clock className="h-12 w-12 text-amber-500 mx-auto animate-pulse" />
+                ) : isServerBusyError(error) ? (
+                  <RefreshCw className="h-12 w-12 text-orange-500 mx-auto animate-spin" />
                 ) : isTimeoutError(error) ? (
                   <RefreshCw className="h-12 w-12 text-blue-500 mx-auto" />
                 ) : (
@@ -393,14 +424,20 @@ export default function ExplorePage() {
                 )}
                 <div className="space-y-1.5">
                   <h3 className="text-lg font-bold text-foreground">
-                    {isServerBusyError(error)
+                    {isRateLimitError(error)
+                      ? "Too Many Requests (Rate Limited)"
+                      : isServerBusyError(error)
                       ? "Server Busy (Waking Up)"
                       : isTimeoutError(error)
                       ? "Connection Timed Out"
                       : "Catalog Error"}
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                    {isServerBusyError(error)
+                    {isRateLimitError(error)
+                      ? (cooldownRemaining && cooldownRemaining > 0)
+                        ? `Request frequency limit reached. Cooldown active: please wait ${cooldownRemaining}s before retrying.`
+                        : "Too many catalog requests were sent in a short window. Please wait a moment before trying again."
+                      : isServerBusyError(error)
                       ? "The catalog service is experiencing high load or spinning up from sleep. Please wait a few moments and retry."
                       : isTimeoutError(error)
                       ? "The server took too long to respond. The free-tier backend is likely warming up. Click below to reconnect."
@@ -409,14 +446,18 @@ export default function ExplorePage() {
                 </div>
                 <Button
                   onClick={handleRetry}
-                  disabled={isRetrying || isFetching}
+                  disabled={isRetrying || isFetching || (cooldownRemaining !== null && cooldownRemaining > 0)}
                   variant="outline"
                   className="mt-2 inline-flex items-center gap-2"
                 >
                   <RefreshCw
                     className={cn("h-4 w-4", (isRetrying || isFetching) && "animate-spin")}
                   />
-                  {isRetrying || isFetching ? "Connecting..." : "Retry Connection"}
+                  {cooldownRemaining !== null && cooldownRemaining > 0
+                    ? `Retry in ${cooldownRemaining}s`
+                    : isRetrying || isFetching
+                    ? "Connecting..."
+                    : "Retry Connection"}
                 </Button>
               </CardContent>
             </Card>
