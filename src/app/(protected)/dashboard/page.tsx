@@ -319,15 +319,15 @@ export default function DashboardPage() {
         <div className="grid gap-6 md:grid-cols-3">
           {/* Recharts progress chart */}
           <motion.div variants={itemVariants} className="md:col-span-2">
-            <Card className="bg-card/50 backdrop-blur-md border-border/80 h-full">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Study Plans Progress
+            <Card className="bg-card/50 backdrop-blur-md border border-border/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-xl h-full flex flex-col justify-between">
+              <CardHeader className="!p-5 sm:!p-6 pb-2 sm:pb-3">
+                <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary shrink-0" />
+                  <span>Study Plans Progress</span>
                 </CardTitle>
-                <CardDescription className="text-slate-700 dark:text-slate-300 font-medium">Visual overview of task completion percentage per plan</CardDescription>
+                <CardDescription className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">Visual overview of task completion percentage per plan</CardDescription>
               </CardHeader>
-              <CardContent className="h-[300px]">
+              <CardContent className="!p-5 sm:!p-6 !pt-0 h-[300px] flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#CBD5E1" />
@@ -347,15 +347,15 @@ export default function DashboardPage() {
 
           {/* Current Focus / Continue Learning */}
           <motion.div variants={itemVariants} className="space-y-6">
-            <Card className="bg-card/50 backdrop-blur-md border-border/80 flex flex-col justify-between h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <PlayCircle className="h-5 w-5 text-accent animate-pulse" />
-                  Current Focus
+            <Card className="bg-card/50 backdrop-blur-md border border-border/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-xl flex flex-col justify-between h-full">
+              <CardHeader className="!p-5 sm:!p-6 pb-2 sm:pb-3">
+                <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+                  <PlayCircle className="h-5 w-5 text-accent animate-pulse shrink-0" />
+                  <span>Current Focus</span>
                 </CardTitle>
-                <CardDescription>The next task pending on your studies</CardDescription>
+                <CardDescription className="text-xs sm:text-sm">The next task pending on your studies</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+              <CardContent className="!p-5 sm:!p-6 !pt-0 space-y-4 flex-grow flex flex-col justify-between">
                 {nextTask && activePlan ? (
                   <div className="space-y-4">
                     <div className="p-3 bg-muted/40 rounded-lg border border-border/50">
@@ -399,22 +399,22 @@ export default function DashboardPage() {
       {/* AI Recommendations Preview Widget */}
       {totalStudyPlans > 0 && recommendations && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-card/50 backdrop-blur-md border-border/80 relative overflow-hidden shadow-md">
+          <Card className="bg-card/50 backdrop-blur-md border border-border/80 relative overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 rounded-xl">
             <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-primary to-secondary" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Adaptive AI Study Recommendations
+            <CardHeader className="!p-5 sm:!p-6 pb-2 sm:pb-3">
+              <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary shrink-0" />
+                <span>Adaptive AI Study Recommendations</span>
               </CardTitle>
-              <CardDescription>AI insight analysis of your active task lists and study plans progress</CardDescription>
+              <CardDescription className="text-xs sm:text-sm">AI insight analysis of your active task lists and study plans progress</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-xs text-muted-foreground leading-relaxed">
+            <CardContent className="!p-5 sm:!p-6 !pt-0 space-y-4">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                 {recommendations.summary}
               </p>
               
               {recommendations.recommendedActions && recommendations.recommendedActions.length > 0 && (
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {recommendations.recommendedActions.slice(0, 2).map((action: any, idx: number) => {
                     const priorityClass = 
                       action.priority === "high" 
@@ -424,16 +424,16 @@ export default function DashboardPage() {
                         : "bg-blue-500/10 text-blue-500 border border-blue-500/20";
                     
                     return (
-                      <div key={idx} className="p-3 rounded-lg border border-border/50 bg-background/50 flex flex-col justify-between gap-2">
+                      <div key={idx} className="p-3.5 sm:p-4 rounded-xl border border-border/50 bg-background/50 flex flex-col justify-between gap-2.5">
                         <div className="space-y-1">
-                          <div className="text-xs font-bold text-foreground line-clamp-1">{action.title}</div>
-                          <div className="text-[10px] text-muted-foreground line-clamp-1">{action.description}</div>
+                          <div className="text-xs sm:text-sm font-bold text-foreground line-clamp-1">{action.title}</div>
+                          <div className="text-[11px] sm:text-xs text-muted-foreground line-clamp-1">{action.description}</div>
                         </div>
-                        <div className="flex items-center justify-between text-[10px] pt-1">
-                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border ${priorityClass}`}>
+                        <div className="flex items-center justify-between text-xs pt-1 border-t border-border/30">
+                          <span className={`px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${priorityClass}`}>
                             {action.priority}
                           </span>
-                          <span className="text-muted-foreground font-semibold flex items-center gap-1">
+                          <span className="text-muted-foreground font-semibold flex items-center gap-1 text-[11px] sm:text-xs">
                             <Clock className="h-3 w-3" />
                             {action.estimatedMinutes} mins
                           </span>
@@ -444,8 +444,8 @@ export default function DashboardPage() {
                 </div>
               )}
               
-              <Link href="/recommendations" className="block pt-2">
-                <Button size="sm" className="w-full sm:w-auto text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/95 flex items-center justify-center gap-1.5 shadow-sm">
+              <Link href="/recommendations" className="block pt-1">
+                <Button size="sm" className="w-full sm:w-auto text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/95 flex items-center justify-center gap-1.5 shadow-sm px-4 py-2">
                   View Full Recommendations Report <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
@@ -467,22 +467,39 @@ export default function DashboardPage() {
               const totalCount = p.tasks?.length || 0;
               const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
               return (
-                <Card key={p._id} className="bg-card/40 backdrop-blur-md border-border/80">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="text-sm font-bold text-foreground truncate">{p.title}</div>
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <Card key={p._id} className="bg-card/50 backdrop-blur-md border border-border/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden flex flex-col justify-between">
+                  <CardContent className="!p-5 sm:!p-6 flex flex-col justify-between flex-1 space-y-4">
+                    <div className="space-y-1.5">
+                      <h3 className="text-sm sm:text-base font-bold text-foreground line-clamp-2 leading-snug" title={p.title}>
+                        {p.title}
+                      </h3>
+                      {p.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                          {p.description}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
                         <span>Progress</span>
-                        <span>{percentage}%</span>
+                        <span className="font-semibold text-foreground">{percentage}%</span>
                       </div>
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-primary rounded-full transition-all duration-500" 
+                          style={{ width: `${percentage}%` }} 
+                        />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
-                      <span>{completedCount}/{totalCount} Tasks</span>
-                      <Link href="/planner" className="text-primary hover:underline font-bold">
-                        Open Planner
+
+                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/40">
+                      <span className="font-medium">{completedCount}/{totalCount} Tasks</span>
+                      <Link 
+                        href="/planner" 
+                        className="inline-flex items-center gap-1 text-primary hover:text-primary/80 font-bold transition-colors"
+                      >
+                        Open Planner <ArrowRight className="h-3 w-3" />
                       </Link>
                     </div>
                   </CardContent>
