@@ -56,7 +56,7 @@ export default function ExploreDetailsPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [is404, setIs404] = useState(false);
 
-  const fetchTemplate = async () => {
+  const fetchTemplate = async (signal?: AbortSignal) => {
     setIsLoading(true);
     setError(null);
     setIs404(false);
@@ -64,7 +64,7 @@ export default function ExploreDetailsPage({ params }: PageProps) {
       const res = await apiClient.get<{
         success: boolean;
         data: ExploreTemplate;
-      }>(`/api/explore/${id}`);
+      }>(`/api/explore/${id}`, { signal });
 
       if (res.success && res.data) {
         setTemplate(res.data);
@@ -72,11 +72,14 @@ export default function ExploreDetailsPage({ params }: PageProps) {
         setIs404(true);
       }
     } catch (err: any) {
+      if (err?.name === "AbortError" || err?.name === "CanceledError") return;
       console.error("Explore template fetch error:", err);
       if (err.status === 404) {
         setIs404(true);
-      } else if (err.status === 429 || err?.isRateLimit || err?.message?.includes("429")) {
-        setError("The server is temporarily busy (Rate Limited). Please wait a few seconds and try again.");
+      } else if (err.status === 429 || err?.isRateLimit || err?.isServerBusy || err?.status === 503) {
+        setError("The server is temporarily busy or waking up. Please wait a moment and try again.");
+      } else if (err.isTimeout || err.status === 504 || err.status === 408) {
+        setError("The connection timed out while loading the study template. Please try again.");
       } else {
         setError(err.message || "Failed to load the study template details.");
       }
@@ -85,14 +88,14 @@ export default function ExploreDetailsPage({ params }: PageProps) {
     }
   };
 
-  const fetchRelated = async (categoryName: string) => {
+  const fetchRelated = async (categoryName: string, signal?: AbortSignal) => {
     setIsLoadingRelated(true);
     setRelatedError(null);
     try {
       const res = await apiClient.get<{
         success: boolean;
         data: ExploreTemplate[];
-      }>(`/api/explore?category=${encodeURIComponent(categoryName)}&limit=10`);
+      }>(`/api/explore?category=${encodeURIComponent(categoryName)}&limit=10`, { signal });
 
       if (res.success && res.data) {
         // Filter out current template by ID and slice to first 4 related
@@ -102,8 +105,9 @@ export default function ExploreDetailsPage({ params }: PageProps) {
         setRelatedError("Failed to fetch related study programs.");
       }
     } catch (err: any) {
+      if (err?.name === "AbortError" || err?.name === "CanceledError") return;
       console.error("Related templates fetch error:", err);
-      if (err.status === 429 || err?.isRateLimit || err?.message?.includes("429")) {
+      if (err.status === 429 || err?.isRateLimit || err?.isServerBusy) {
         setRelatedError("Temporarily unable to load related study programs due to high traffic.");
       } else {
         setRelatedError(err.message || "Failed to load related study programs.");
@@ -114,15 +118,17 @@ export default function ExploreDetailsPage({ params }: PageProps) {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchTemplate();
-    }
+    if (!id) return;
+    const controller = new AbortController();
+    fetchTemplate(controller.signal);
+    return () => controller.abort();
   }, [id]);
 
   useEffect(() => {
-    if (template?.category) {
-      fetchRelated(template.category);
-    }
+    if (!template?.category) return;
+    const controller = new AbortController();
+    fetchRelated(template.category, controller.signal);
+    return () => controller.abort();
   }, [template?.category, id]);
 
   // Difficulty badge colors mapping
@@ -226,7 +232,7 @@ export default function ExploreDetailsPage({ params }: PageProps) {
                 <h3 className="text-lg font-bold text-foreground">Failed to Load Details</h3>
                 <p className="text-sm text-muted-foreground">{error}</p>
               </div>
-              <Button onClick={fetchTemplate} variant="outline" className="mt-2">
+              <Button onClick={() => fetchTemplate()} variant="outline" className="mt-2">
                 <RefreshCw className="h-4 w-4 mr-2" /> Retry Connection
               </Button>
             </CardContent>

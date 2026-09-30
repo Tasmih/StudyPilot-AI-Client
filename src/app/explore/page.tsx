@@ -66,6 +66,31 @@ const isRateLimitError = (err: any): boolean => {
   );
 };
 
+const isTimeoutError = (err: any): boolean => {
+  if (!err) return false;
+  return (
+    err.isTimeout === true ||
+    err.status === 408 ||
+    err.status === 504 ||
+    String(err.message || "").toLowerCase().includes("timeout") ||
+    String(err.message || "").toLowerCase().includes("gateway timeout") ||
+    String(err.message || "").toLowerCase().includes("timed out")
+  );
+};
+
+const isServerBusyError = (err: any): boolean => {
+  if (!err) return false;
+  return (
+    err.isServerBusy === true ||
+    err.status === 502 ||
+    err.status === 503 ||
+    isRateLimitError(err) ||
+    String(err.message || "").toLowerCase().includes("busy") ||
+    String(err.message || "").toLowerCase().includes("service unavailable") ||
+    String(err.message || "").toLowerCase().includes("bad gateway")
+  );
+};
+
 export default function ExplorePage() {
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Debounced tracker
@@ -88,7 +113,7 @@ export default function ExplorePage() {
 
   const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ["templates", search, category, difficulty, sort, page],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const queryParams = new URLSearchParams();
       queryParams.append("page", page.toString());
       queryParams.append("limit", "12");
@@ -106,20 +131,21 @@ export default function ExplorePage() {
           total: number;
           totalPages: number;
         };
-      }>(`/api/explore?${queryParams.toString()}`);
+      }>(`/api/explore?${queryParams.toString()}`, { signal });
       return res;
     },
     placeholderData: (previousData) => previousData,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent redundant refetches
-    gcTime: 10 * 60 * 1000, // Keep in garbage collection cache for 10 minutes
+    staleTime: 3 * 60 * 1000, // 3 minutes stale time to avoid re-request storms while navigating
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false, // Prevent aggressive refetching when window gains focus
     refetchOnReconnect: false, // Prevent spamming requests on reconnect
-    retry: (failureCount) => {
-      // Allow up to 2 retries with exponential backoff
-      if (failureCount >= 2) return false;
-      return true;
+    retry: (failureCount, err: any) => {
+      // Never retry if aborted by user changing filters or leaving page
+      if (err?.name === "AbortError" || err?.name === "CanceledError") return false;
+      // Allow 1 retry at the react-query layer (apiClient has its own retry with backoff for 429/503)
+      return failureCount < 1;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    retryDelay: 1500,
   });
 
   const templates = data?.data || [];
@@ -141,12 +167,20 @@ export default function ExplorePage() {
     setPage(1);
   };
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setSearch(searchTerm);
+      setPage(1);
+    }
+  };
+
   const handleRetry = async () => {
     setIsRetrying(true);
     try {
-      await refetch();
+      await refetch({ cancelRefetch: true });
     } finally {
-      setTimeout(() => setIsRetrying(false), 1200);
+      setTimeout(() => setIsRetrying(false), 800);
     }
   };
 
@@ -212,6 +246,7 @@ export default function ExplorePage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Search templates or topics..."
                 className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm bg-background border-border hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary outline-none"
               />
@@ -319,7 +354,7 @@ export default function ExplorePage() {
 
         {/* Listing display layouts */}
         {isLoading ? (
-          /* Skeletons */
+          /* Initial loading skeletons */
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pt-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <Card key={i} className="animate-pulse flex flex-col justify-between overflow-hidden h-[340px]">
@@ -336,29 +371,39 @@ export default function ExplorePage() {
             ))}
           </div>
         ) : error ? (
-          /* Error display with specific Rate Limit (HTTP 429) visual feedback */
+          /* Error display with specific Server Busy / Timeout / Network visual feedback */
           <div className="max-w-md mx-auto py-12">
             <Card
               className={cn(
                 "text-center shadow-md",
-                isRateLimitError(error)
+                isServerBusyError(error)
                   ? "border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10"
-                  : "border-destructive/30"
+                  : isTimeoutError(error)
+                  ? "border-blue-500/40 bg-blue-500/5 dark:bg-blue-500/10"
+                  : "border-destructive/30 bg-destructive/5"
               )}
             >
               <CardContent className="pt-8 pb-8 space-y-4">
-                {isRateLimitError(error) ? (
+                {isServerBusyError(error) ? (
                   <Clock className="h-12 w-12 text-amber-500 mx-auto animate-pulse" />
+                ) : isTimeoutError(error) ? (
+                  <RefreshCw className="h-12 w-12 text-blue-500 mx-auto" />
                 ) : (
                   <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
                 )}
                 <div className="space-y-1.5">
                   <h3 className="text-lg font-bold text-foreground">
-                    {isRateLimitError(error) ? "Server Busy (Rate Limited)" : "Catalog Error"}
+                    {isServerBusyError(error)
+                      ? "Server Busy (Waking Up)"
+                      : isTimeoutError(error)
+                      ? "Connection Timed Out"
+                      : "Catalog Error"}
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                    {isRateLimitError(error)
-                      ? "The catalog received too many requests in a short time. Please wait a few seconds before trying again."
+                    {isServerBusyError(error)
+                      ? "The catalog service is experiencing high load or spinning up from sleep. Please wait a few moments and retry."
+                      : isTimeoutError(error)
+                      ? "The server took too long to respond. The free-tier backend is likely warming up. Click below to reconnect."
                       : error?.message || "Failed to load academic catalog templates."}
                   </p>
                 </div>
@@ -371,7 +416,7 @@ export default function ExplorePage() {
                   <RefreshCw
                     className={cn("h-4 w-4", (isRetrying || isFetching) && "animate-spin")}
                   />
-                  {isRetrying || isFetching ? "Retrying..." : "Retry Loading"}
+                  {isRetrying || isFetching ? "Connecting..." : "Retry Connection"}
                 </Button>
               </CardContent>
             </Card>
@@ -396,8 +441,14 @@ export default function ExplorePage() {
           </div>
         ) : (
           /* Results grid */
-          <div className="space-y-8">
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="space-y-8 relative">
+            {isFetching && (
+              <div className="absolute -top-6 right-0 flex items-center gap-1.5 text-xs text-muted-foreground animate-pulse">
+                <RefreshCw className="h-3 w-3 animate-spin text-primary" />
+                <span>Updating catalog...</span>
+              </div>
+            )}
+            <div className={cn("grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 transition-opacity duration-200", isFetching && "opacity-80")}>
               {templates.map((item) => (
                 <Card
                   key={item.id}
